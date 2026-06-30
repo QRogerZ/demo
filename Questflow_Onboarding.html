@@ -1,0 +1,1342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Questflow Onboarding · Apple Style Refinement</title>
+<style>
+:root{
+  --phone-w:393px;
+  --phone-h:852px;
+  --black:#05060A;
+  --ink:#101828;
+  --muted:#667085;
+  --muted2:#98A2B3;
+  --line:rgba(16,24,40,.09);
+  --blue:#007AFF;
+  --green:#34C759;
+  --orange:#FF9500;
+  --purple:#AF52DE;
+  --red:#FF3B30;
+  --ease:cubic-bezier(.22,1,.36,1);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;margin:0}
+body{
+  overflow:hidden;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text","Helvetica Neue",Arial,sans-serif;
+  color:#0B1220;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(0,122,255,.18), transparent 30%),
+    radial-gradient(circle at 82% 16%, rgba(175,82,222,.16), transparent 26%),
+    radial-gradient(circle at 50% 90%, rgba(52,199,89,.10), transparent 40%),
+    linear-gradient(180deg,#F8FAFC 0%,#EEF2F7 100%);
+}
+.stage{
+  height:100%;
+  display:grid;
+  grid-template-columns:minmax(260px,1fr) auto minmax(260px,1fr);
+  gap:44px;
+  align-items:center;
+  padding:32px clamp(28px,5vw,72px);
+}
+.copy{
+  max-width:390px;
+}
+.kicker{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border-radius:999px;
+  background:rgba(255,255,255,.68);
+  border:1px solid rgba(255,255,255,.80);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  box-shadow:0 12px 36px rgba(16,24,40,.06);
+  color:#475467;
+  font-size:12px;
+  font-weight:800;
+}
+.copy h1{
+  margin:18px 0 10px;
+  font-size:45px;
+  line-height:.98;
+  letter-spacing:-.065em;
+  font-weight:900;
+}
+.copy p{
+  margin:0;
+  color:#667085;
+  font-size:15px;
+  line-height:1.56;
+}
+.notes{
+  margin-top:24px;
+  display:grid;
+  gap:10px;
+}
+.note{
+  display:grid;
+  grid-template-columns:28px 1fr;
+  gap:11px;
+  padding:13px;
+  border-radius:20px;
+  background:rgba(255,255,255,.62);
+  border:1px solid rgba(255,255,255,.74);
+  backdrop-filter:blur(22px);
+  box-shadow:0 14px 34px rgba(16,24,40,.055);
+}
+.note i{
+  width:28px;height:28px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#111827;
+  color:white;
+  font-size:12px;
+  font-weight:900;
+  font-style:normal;
+}
+.note b{display:block;font-size:13px;margin-bottom:3px}
+.note span{display:block;color:#667085;font-size:12.5px;line-height:1.42}
+
+.meta{
+  justify-self:start;
+  width:360px;
+  padding:18px;
+  border-radius:28px;
+  background:rgba(255,255,255,.66);
+  border:1px solid rgba(255,255,255,.78);
+  backdrop-filter:blur(24px);
+  box-shadow:0 20px 50px rgba(16,24,40,.08);
+}
+.meta h3{
+  margin:0 0 14px;
+  font-size:16px;
+  letter-spacing:-.02em;
+}
+.meta-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:18px;
+  padding:12px 0;
+  border-top:1px solid rgba(16,24,40,.08);
+}
+.meta-row b{font-size:13px}
+.meta-row span{text-align:right;font-size:13px;color:#667085;line-height:1.35}
+
+.phone-wrap{
+  position:relative;
+  display:grid;
+  place-items:center;
+}
+.phone-shadow{
+  position:absolute;
+  width:380px;height:82px;
+  left:50%;bottom:-38px;
+  transform:translateX(-50%);
+  border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(16,24,40,.28),transparent 70%);
+  filter:blur(18px);
+}
+.halo{
+  position:absolute;
+  inset:-46px;
+  border-radius:92px;
+  background:
+    radial-gradient(circle at 50% 10%,rgba(255,255,255,.95),transparent 45%),
+    radial-gradient(circle at 50% 75%,rgba(0,122,255,.20),transparent 60%);
+  filter:blur(16px);
+  opacity:.9;
+}
+.device{
+  position:relative;
+  width:413px;height:872px;
+  padding:10px;
+  border-radius:59px;
+  background:linear-gradient(180deg,#30343D 0%,#171A22 52%,#05070B 100%);
+  box-shadow:
+    0 55px 140px rgba(16,24,40,.34),
+    inset 0 0 0 1px rgba(255,255,255,.16),
+    inset 0 -1px 0 rgba(255,255,255,.06);
+}
+.device:before{
+  content:"";
+  position:absolute;
+  inset:7px;
+  border-radius:53px;
+  border:1px solid rgba(255,255,255,.10);
+  pointer-events:none;
+}
+.side{position:absolute;background:#111827;border-radius:999px}
+.side.l1{left:-2px;top:150px;width:4px;height:68px}
+.side.l2{left:-2px;top:238px;width:4px;height:116px}
+.side.l3{left:-2px;top:370px;width:4px;height:116px}
+.side.r{right:-2px;top:286px;width:4px;height:146px}
+
+.phone{
+  position:relative;
+  width:var(--phone-w);
+  height:var(--phone-h);
+  border-radius:48px;
+  overflow:hidden;
+  background:#050A14;
+}
+.phone:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:48px;
+  pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.26);
+  z-index:100;
+}
+.status{
+  position:absolute;
+  z-index:80;
+  left:0;right:0;top:0;
+  height:54px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:13px 24px 0;
+  color:white;
+  font-size:14px;
+  font-weight:800;
+  pointer-events:none;
+}
+.island{
+  position:absolute;
+  z-index:84;
+  top:11px;left:50%;
+  transform:translateX(-50%);
+  width:120px;height:36px;
+  border-radius:999px;
+  background:#050505;
+  box-shadow:inset 0 -1px 1px rgba(255,255,255,.08);
+}
+.home{
+  position:absolute;
+  z-index:84;
+  left:50%;bottom:8px;
+  width:136px;height:5px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:rgba(255,255,255,.96);
+}
+.app{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 16% 2%,rgba(0,122,255,.34),transparent 35%),
+    radial-gradient(circle at 92% 5%,rgba(175,82,222,.26),transparent 32%),
+    linear-gradient(180deg,#070E1C 0%,#0B1730 60%,#0D1833 100%);
+  color:white;
+  overflow:hidden;
+}
+.app:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.04;
+  background-image:
+    linear-gradient(0deg,transparent 24%,#fff 25%,#fff 26%,transparent 27%,transparent 74%,#fff 75%,#fff 76%,transparent 77%),
+    linear-gradient(90deg,transparent 24%,#fff 25%,#fff 26%,transparent 27%,transparent 74%,#fff 75%,#fff 76%,transparent 77%);
+  background-size:32px 32px;
+  pointer-events:none;
+}
+.topbar{
+  position:absolute;
+  z-index:70;
+  left:22px;right:22px;top:62px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.brand{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  height:34px;
+  padding:0 11px 0 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.085);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  font-size:12px;
+  font-weight:850;
+  color:rgba(255,255,255,.88);
+}
+.logo{
+  width:20px;height:20px;
+  border-radius:8px;
+  background:linear-gradient(135deg,#fff,#91C9FF 45%,#AF52DE 100%);
+  box-shadow:0 0 22px rgba(0,122,255,.45);
+}
+.actions{
+  display:flex;gap:4px;align-items:center;
+}
+.actions button{
+  border:0;
+  background:transparent;
+  color:rgba(255,255,255,.72);
+  font-size:12px;
+  font-weight:800;
+  padding:8px 6px;
+  border-radius:10px;
+  cursor:pointer;
+}
+.actions button:active{background:rgba(255,255,255,.10)}
+
+.viewport{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+}
+.track{
+  height:100%;
+  display:flex;
+  transition:transform .72s var(--ease);
+  will-change:transform;
+}
+.screen{
+  position:relative;
+  flex:0 0 100%;
+  height:100%;
+  padding:118px 24px 112px;
+  overflow:hidden;
+}
+.badge{
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.12);
+  color:#DCE9FF;
+  font-size:11px;
+  font-weight:900;
+}
+.title{
+  margin:16px 0 0;
+  font-size:31px;
+  line-height:1.05;
+  letter-spacing:-.052em;
+  font-weight:950;
+}
+.body{
+  margin:11px 0 0;
+  color:#C7D7ED;
+  font-size:15px;
+  line-height:1.48;
+  max-width:315px;
+}
+
+.glass{
+  margin-top:18px;
+  border-radius:32px;
+  padding:12px;
+  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.065));
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 28px 58px rgba(0,0,0,.22);
+  backdrop-filter:blur(24px);
+}
+.ios-card{
+  position:relative;
+  min-height:304px;
+  border-radius:26px;
+  padding:14px;
+  background:#F8FAFC;
+  color:#101828;
+  overflow:hidden;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.88);
+}
+.ios-card:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(0,122,255,.11),transparent 35%),
+    radial-gradient(circle at 96% 0%,rgba(175,82,222,.09),transparent 32%);
+  pointer-events:none;
+}
+.ios-card>*{position:relative}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.card-title{
+  font-size:13px;
+  font-weight:950;
+  letter-spacing:-.01em;
+}
+.live{
+  display:inline-flex;
+  gap:5px;
+  align-items:center;
+  padding:5px 8px;
+  border-radius:999px;
+  color:#027A48;
+  background:#ECFDF3;
+  font-size:10px;
+  font-weight:950;
+}
+.live:before{
+  content:"";
+  width:6px;height:6px;
+  border-radius:50%;
+  background:#34C759;
+  box-shadow:0 0 0 4px rgba(52,199,89,.16);
+}
+.feed-list{display:grid;gap:9px}
+.feed{
+  padding:12px;
+  border-radius:20px;
+  background:rgba(255,255,255,.94);
+  border:1px solid rgba(16,24,40,.075);
+  box-shadow:0 9px 24px rgba(16,24,40,.065);
+}
+.feed.featured{
+  border-color:rgba(0,122,255,.38);
+  box-shadow:0 0 0 3px rgba(0,122,255,.11),0 18px 36px rgba(0,122,255,.11);
+}
+.feed h4{
+  margin:0;
+  font-size:12.7px;
+  line-height:1.32;
+  letter-spacing:-.018em;
+}
+.feed p{
+  margin:7px 0 0;
+  color:#667085;
+  font-size:10.8px;
+  line-height:1.38;
+}
+.tags{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  margin-top:9px;
+}
+.tag{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+}
+.tag.blue{background:#EFF8FF;color:#175CD3}
+.tag.green{background:#ECFDF3;color:#027A48}
+.tag.orange{background:#FFFAEB;color:#B54708}
+.tag.purple{background:#F4F3FF;color:#5925DC}
+.tag.gray{background:#F2F4F7;color:#475467}
+.tag.red{background:#FEF3F2;color:#B42318}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:10px;
+}
+.stat{
+  padding:7px;
+  border-radius:13px;
+  background:#F8FAFC;
+  border:1px solid rgba(16,24,40,.055);
+}
+.stat b{display:block;font-size:11px;line-height:1}
+.stat span{
+  display:block;
+  margin-top:3px;
+  color:#667085;
+  font-size:9.4px;
+  font-weight:800;
+}
+.float-chip{
+  position:absolute;
+  right:16px;
+  top:74px;
+  width:64px;height:64px;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.78);
+  border:1px solid rgba(255,255,255,.82);
+  box-shadow:0 18px 34px rgba(0,122,255,.16);
+  backdrop-filter:blur(16px);
+  animation:floaty 4.8s var(--ease) infinite;
+}
+@keyframes floaty{
+  0%,100%{transform:translateY(0) rotate(0deg)}
+  50%{transform:translateY(-8px) rotate(3deg)}
+}
+
+.interests{
+  margin-top:18px;
+  display:grid;
+  gap:10px;
+}
+.interest{
+  width:100%;
+  min-height:66px;
+  border:1px solid rgba(255,255,255,.13);
+  background:rgba(255,255,255,.075);
+  color:white;
+  border-radius:23px;
+  padding:13px 14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  cursor:pointer;
+  transition:transform .24s var(--ease),background .24s var(--ease),border .24s var(--ease),box-shadow .24s var(--ease);
+}
+.interest:active{transform:scale(.985)}
+.interest.active{
+  background:rgba(255,255,255,.96);
+  color:#101828;
+  border-color:rgba(255,255,255,.95);
+  box-shadow:0 16px 34px rgba(0,0,0,.16);
+}
+.i-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+}
+.i-icon{
+  width:40px;height:40px;
+  border-radius:16px;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.10);
+  font-size:18px;
+}
+.interest.active .i-icon{background:#F2F4F7;border-color:#EAECF0}
+.interest b{display:block;font-size:14.5px;letter-spacing:-.015em}
+.interest small{
+  display:block;
+  margin-top:3px;
+  color:#C7D7ED;
+  font-size:11.5px;
+  line-height:1.32;
+  font-weight:650;
+}
+.interest.active small{color:#667085}
+.check{
+  width:24px;height:24px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.14);
+  color:transparent;
+  font-size:12px;
+  font-weight:900;
+}
+.interest.active .check{
+  background:#101828;
+  border-color:#101828;
+  color:white;
+}
+.selected{
+  margin-top:12px;
+  max-width:100%;
+  padding:9px 11px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
+  color:#DCE9FF;
+  font-size:11.5px;
+  font-weight:850;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.workflow-card{
+  height:372px;
+  padding:0;
+}
+.workflow-inner{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  border-radius:26px;
+  background:#F8FAFC;
+}
+.workflow-feed{
+  position:absolute;
+  inset:0;
+  padding:14px;
+  animation:feedMotion 8.2s var(--ease) infinite;
+  will-change:transform,opacity,filter;
+}
+.workflow-feature{
+  animation:featureMotion 8.2s var(--ease) infinite;
+  will-change:transform,box-shadow;
+}
+.tap-ring{
+  position:absolute;
+  right:62px;
+  top:118px;
+  width:36px;height:36px;
+  border-radius:50%;
+  background:rgba(0,122,255,.16);
+  border:1px solid rgba(0,122,255,.32);
+  animation:tapRing 8.2s var(--ease) infinite;
+}
+.detail-sheet{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:13px;
+  border-radius:28px;
+  padding:13px;
+  background:rgba(255,255,255,.965);
+  border:1px solid rgba(16,24,40,.08);
+  box-shadow:0 32px 80px rgba(16,24,40,.25);
+  transform:translateY(236px);
+  opacity:0;
+  animation:sheetMotion 8.2s var(--ease) infinite;
+  will-change:transform,opacity;
+}
+.handle{
+  width:44px;height:5px;
+  border-radius:999px;
+  margin:0 auto 10px;
+  background:#D0D5DD;
+}
+.detail-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:2px;
+}
+.detail-title{font-size:13px;font-weight:950}
+.info-row{
+  padding:9px 0;
+  border-bottom:1px solid rgba(16,24,40,.07);
+}
+.info-row b{
+  display:block;
+  font-size:11.5px;
+  color:#101828;
+}
+.info-row span{
+  display:block;
+  margin-top:4px;
+  color:#667085;
+  font-size:10.8px;
+  line-height:1.38;
+}
+.ai-area{
+  margin-top:8px;
+  padding-top:9px;
+  border-top:1px solid rgba(16,24,40,.07);
+  opacity:0;
+  transform:translateY(12px);
+  animation:aiMotion 8.2s var(--ease) infinite;
+  will-change:transform,opacity;
+}
+.bubble{
+  max-width:84%;
+  margin-top:7px;
+  padding:9px 10px;
+  border-radius:17px;
+  font-size:10.8px;
+  line-height:1.36;
+}
+.bubble.me{
+  margin-left:auto;
+  background:#101828;
+  color:white;
+  border-bottom-right-radius:6px;
+}
+.bubble.ai{
+  background:#F2F4F7;
+  color:#344054;
+  border-bottom-left-radius:6px;
+}
+.input{
+  height:36px;
+  margin-top:9px;
+  padding:0 10px;
+  border-radius:16px;
+  background:#F8FAFC;
+  border:1px solid rgba(16,24,40,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  color:#98A2B3;
+  font-size:11px;
+  font-weight:750;
+}
+.spark{
+  width:22px;height:22px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#101828;
+  color:white;
+  font-size:10px;
+}
+.step-strip{
+  position:absolute;
+  left:14px;right:14px;bottom:10px;
+  display:flex;
+  gap:7px;
+  animation:stripMotion 8.2s var(--ease) infinite;
+}
+.step-strip span{
+  flex:1;
+  padding:7px 3px;
+  border-radius:999px;
+  text-align:center;
+  background:rgba(16,24,40,.055);
+  color:#667085;
+  font-size:10px;
+  font-weight:950;
+  transition:background .2s,color .2s;
+}
+.step-strip span:nth-child(1){animation:step1 8.2s var(--ease) infinite}
+.step-strip span:nth-child(2){animation:step2 8.2s var(--ease) infinite}
+.step-strip span:nth-child(3){animation:step3 8.2s var(--ease) infinite}
+
+@keyframes feedMotion{
+  0%,18%{transform:translateY(0) scale(1);filter:blur(0);opacity:1}
+  30%,88%{transform:translateY(-10px) scale(.985);filter:blur(.15px);opacity:.96}
+  100%{transform:translateY(0) scale(1);filter:blur(0);opacity:1}
+}
+@keyframes featureMotion{
+  0%,15%{transform:translateY(0) scale(1)}
+  20%{transform:translateY(-3px) scale(.995)}
+  30%,88%{transform:translateY(-6px) scale(.982)}
+  100%{transform:translateY(0) scale(1)}
+}
+@keyframes tapRing{
+  0%,8%,100%{opacity:0;transform:scale(.72)}
+  12%{opacity:1;transform:scale(1)}
+  20%{opacity:.18;transform:scale(2.4)}
+  25%,99%{opacity:0;transform:scale(2.65)}
+}
+@keyframes sheetMotion{
+  0%,20%{transform:translateY(236px);opacity:0}
+  34%,88%{transform:translateY(0);opacity:1}
+  100%{transform:translateY(236px);opacity:0}
+}
+@keyframes aiMotion{
+  0%,45%{opacity:0;transform:translateY(12px)}
+  56%,88%{opacity:1;transform:translateY(0)}
+  100%{opacity:0;transform:translateY(10px)}
+}
+@keyframes stripMotion{
+  0%,88%{opacity:1}
+  100%{opacity:0}
+}
+@keyframes step1{
+  0%,24%{background:#101828;color:white}
+  34%,100%{background:rgba(16,24,40,.055);color:#667085}
+}
+@keyframes step2{
+  0%,29%{background:rgba(16,24,40,.055);color:#667085}
+  34%,51%{background:#101828;color:white}
+  61%,100%{background:rgba(16,24,40,.055);color:#667085}
+}
+@keyframes step3{
+  0%,55%{background:rgba(16,24,40,.055);color:#667085}
+  61%,88%{background:#101828;color:white}
+  100%{background:rgba(16,24,40,.055);color:#667085}
+}
+
+.pay-list{
+  margin-top:18px;
+  display:grid;
+  gap:10px;
+}
+.mini-plan{
+  min-height:70px;
+  padding:14px;
+  border-radius:23px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  background:rgba(255,255,255,.085);
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(18px);
+}
+.mini-plan b{display:block;font-size:14.5px}
+.mini-plan small{
+  display:block;
+  margin-top:4px;
+  color:#C7D7ED;
+  font-size:11.5px;
+  line-height:1.35;
+  font-weight:650;
+}
+.pill{
+  display:inline-flex;
+  align-items:center;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.13);
+  color:white;
+  font-size:10px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.details-btn{
+  width:100%;
+  height:50px;
+  margin-top:13px;
+  border:0;
+  border-radius:19px;
+  cursor:pointer;
+  background:linear-gradient(180deg,#FFFFFF 0%,#EEF6FF 100%);
+  color:#101828;
+  box-shadow:0 18px 34px rgba(0,122,255,.18);
+  font-size:14.5px;
+  font-weight:950;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.details-btn:active,.next:active,.back-bottom:active{transform:scale(.985)}
+.subnote{
+  margin-top:12px;
+  color:#C7D7ED;
+  font-size:11.5px;
+  font-weight:750;
+}
+
+.footer{
+  position:absolute;
+  z-index:72;
+  left:24px;right:24px;bottom:26px;
+}
+.dots{
+  height:14px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:7px;
+  margin-bottom:18px;
+}
+.dot{
+  width:7px;height:7px;
+  border-radius:999px;
+  background:rgba(255,255,255,.24);
+  transition:width .34s var(--ease),background .34s var(--ease);
+}
+.dot.active{
+  width:28px;
+  background:white;
+}
+.buttons{
+  display:flex;
+  gap:10px;
+}
+.back-bottom{
+  width:52px;height:52px;
+  border:1px solid rgba(255,255,255,.11);
+  background:rgba(255,255,255,.10);
+  color:white;
+  border-radius:19px;
+  font-size:22px;
+  font-weight:900;
+  cursor:pointer;
+}
+.next{
+  flex:1;
+  height:52px;
+  border:0;
+  border-radius:19px;
+  background:white;
+  color:#101828;
+  font-size:15px;
+  font-weight:950;
+  cursor:pointer;
+  box-shadow:0 18px 34px rgba(255,255,255,.12);
+}
+.pay-modal{
+  position:absolute;
+  z-index:96;
+  inset:0;
+  background:rgba(2,6,23,.36);
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .28s var(--ease);
+}
+.pay-modal.open{
+  opacity:1;
+  pointer-events:auto;
+}
+.pay-sheet{
+  position:absolute;
+  left:10px;right:10px;bottom:0;
+  padding:12px 14px 24px;
+  border-radius:34px 34px 0 0;
+  background:rgba(255,255,255,.97);
+  color:#101828;
+  box-shadow:0 -34px 90px rgba(16,24,40,.30);
+  transform:translateY(104%);
+  transition:transform .62s var(--ease);
+  backdrop-filter:blur(24px);
+}
+.pay-modal.open .pay-sheet{transform:translateY(0)}
+.grabber{
+  width:44px;height:5px;
+  border-radius:999px;
+  background:#D0D5DD;
+  margin:0 auto 13px;
+}
+.sheet-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:12px;
+  margin-bottom:12px;
+}
+.sheet-head h3{
+  margin:0;
+  font-size:23px;
+  line-height:1.05;
+  letter-spacing:-.045em;
+}
+.sheet-head p{
+  margin:7px 0 0;
+  color:#667085;
+  font-size:12.5px;
+  line-height:1.36;
+}
+.close{
+  flex:none;
+  width:36px;height:36px;
+  border:0;
+  border-radius:50%;
+  background:#F2F4F7;
+  color:#475467;
+  font-size:18px;
+  font-weight:900;
+  cursor:pointer;
+}
+.plan-stack{
+  display:grid;
+  gap:9px;
+  max-height:448px;
+  overflow:auto;
+  padding-right:2px;
+}
+.plan{
+  padding:13px;
+  border-radius:23px;
+  background:white;
+  border:1px solid rgba(16,24,40,.08);
+  box-shadow:0 8px 22px rgba(16,24,40,.055);
+}
+.plan.feature{
+  border-color:rgba(0,122,255,.36);
+  box-shadow:0 0 0 3px rgba(0,122,255,.10),0 14px 30px rgba(0,122,255,.10);
+}
+.plan-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+}
+.plan h4{
+  margin:0;
+  font-size:16px;
+  letter-spacing:-.02em;
+}
+.price{
+  margin-top:7px;
+  font-size:25px;
+  font-weight:950;
+  letter-spacing:-.04em;
+}
+.plan p{
+  margin:8px 0 0;
+  color:#667085;
+  font-size:11.8px;
+  line-height:1.42;
+}
+.badges{
+  display:flex;
+  gap:6px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
+}
+.mini-badge{
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:950;
+  white-space:nowrap;
+}
+.mini-badge.blue{background:#EFF8FF;color:#175CD3}
+.mini-badge.gold{background:#FFFAEB;color:#B54708}
+.mini-badge.green{background:#ECFDF3;color:#027A48}
+.mini-badge.gray{background:#F2F4F7;color:#475467}
+.start{
+  width:100%;
+  height:51px;
+  margin-top:12px;
+  border:0;
+  border-radius:19px;
+  background:#101828;
+  color:white;
+  font-size:15px;
+  font-weight:950;
+  cursor:pointer;
+}
+.legal{
+  margin-top:10px;
+  color:#667085;
+  font-size:11px;
+  line-height:1.38;
+}
+.complete{
+  height:100%;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  padding:0 26px;
+}
+.complete-icon{
+  width:82px;height:82px;
+  margin:auto;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:white;
+  color:#101828;
+  font-size:36px;
+  font-weight:950;
+  box-shadow:0 28px 48px rgba(255,255,255,.14);
+}
+.complete h2{
+  margin:22px 0 0;
+  font-size:32px;
+  line-height:1.05;
+  letter-spacing:-.045em;
+}
+.complete p{
+  margin:12px auto 0;
+  color:#C7D7ED;
+  font-size:15px;
+  line-height:1.48;
+  max-width:280px;
+}
+
+@media(max-width:1120px){
+  body{overflow:auto}
+  .stage{height:auto;min-height:100%;grid-template-columns:1fr;padding:22px}
+  .copy,.meta{display:none}
+}
+@media(max-width:520px){
+  .stage{padding:0}
+  .phone-wrap{width:100vw;height:100vh}
+  .halo,.phone-shadow,.side,.device:before,.home{display:none}
+  .device{width:100vw;height:100vh;border-radius:0;padding:0;background:transparent;box-shadow:none}
+  .phone{width:100vw;height:100vh;border-radius:0}
+  .phone:after{display:none}
+}
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="copy">
+    <div class="kicker">✦ Apple-style refinement</div>
+    <h1>Smoother, quieter, more finished.</h1>
+    <p>This version rebuilds the demo around native iOS-like motion: one track transition, one CSS-driven workflow animation, and a cleaner subscription sheet.</p>
+    <div class="notes">
+      <div class="note"><i>1</i><div><b>Cleaner Apple-like visual</b><span>More whitespace, softer glass, tighter typography, fewer decorative blocks.</span></div></div>
+      <div class="note"><i>2</i><div><b>No choppy timer state</b><span>P3 uses one continuous CSS animation loop instead of JS step switching.</span></div></div>
+      <div class="note"><i>3</i><div><b>Native sheet behavior</b><span>Subscription details open as a smoother iOS-style bottom sheet.</span></div></div>
+    </div>
+  </section>
+
+  <main class="phone-wrap">
+    <div class="halo"></div>
+    <div class="phone-shadow"></div>
+    <div class="device">
+      <span class="side l1"></span><span class="side l2"></span><span class="side l3"></span><span class="side r"></span>
+      <div class="phone">
+        <div class="status"><span>9:41</span><span>5G&nbsp;&nbsp;▰▰▰&nbsp;&nbsp;🔋</span></div>
+        <div class="island"></div>
+        <div class="app">
+          <div class="topbar">
+            <div class="brand"><span class="logo"></span>Questflow</div>
+            <div class="actions">
+              <button id="navBack" onclick="go(-1)">Back</button>
+              <button onclick="restart()">Restart</button>
+              <button onclick="skip()">Skip</button>
+            </div>
+          </div>
+
+          <div class="viewport">
+            <div class="track" id="track">
+              <section class="screen">
+                <span class="badge">Market signal feed</span>
+                <h2 class="title">Signals built for market decisions</h2>
+                <p class="body">Follow news, events, and trades in one signal feed.</p>
+
+                <div class="glass">
+                  <div class="ios-card">
+                    <div class="float-chip">✦</div>
+                    <div class="card-top"><span class="card-title">Signal Feed</span><span class="live">Live</span></div>
+                    <div class="feed-list">
+                      <article class="feed featured">
+                        <h4>Trump visit odds rise after China trade signals</h4>
+                        <p>Diplomacy headlines are moving related event markets.</p>
+                        <div class="tags"><span class="tag purple">Politics</span><span class="tag green">Bullish</span><span class="tag gray">88 relevance</span></div>
+                        <div class="stats">
+                          <div class="stat"><b>62%</b><span>YES odds</span></div>
+                          <div class="stat"><b>Med</b><span>risk</span></div>
+                          <div class="stat"><b>Live</b><span>status</span></div>
+                        </div>
+                      </article>
+                      <article class="feed">
+                        <h4>NVIDIA supply update lifts AI hardware sentiment</h4>
+                        <div class="tags"><span class="tag blue">Equity</span><span class="tag orange">Watch</span></div>
+                      </article>
+                      <article class="feed">
+                        <h4>BTC whale long detected during range breakout</h4>
+                        <div class="tags"><span class="tag blue">Crypto</span><span class="tag green">Live</span></div>
+                      </article>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="screen">
+                <span class="badge">Personalize your feed</span>
+                <h2 class="title">Pick your focus</h2>
+                <p class="body">Choose the categories you want to track first.</p>
+
+                <div class="interests">
+                  <button class="interest active" data-interest="Politics" onclick="toggleInterest('Politics')"><span class="i-left"><span class="i-icon">🏛</span><span><b>Politics</b><small>Elections · policy · diplomacy</small></span></span><span class="check">✓</span></button>
+                  <button class="interest active" data-interest="Equity" onclick="toggleInterest('Equity')"><span class="i-left"><span class="i-icon">📈</span><span><b>Equity</b><small>NVIDIA · Tesla · sectors</small></span></span><span class="check">✓</span></button>
+                  <button class="interest" data-interest="Crypto" onclick="toggleInterest('Crypto')"><span class="i-left"><span class="i-icon">₿</span><span><b>Crypto</b><small>BTC · ETH · on-chain signals</small></span></span><span class="check">✓</span></button>
+                  <button class="interest" data-interest="Macro" onclick="toggleInterest('Macro')"><span class="i-left"><span class="i-icon">◌</span><span><b>Macro</b><small>Rates · inflation · liquidity</small></span></span><span class="check">✓</span></button>
+                  <button class="interest" data-interest="Geo" onclick="toggleInterest('Geo')"><span class="i-left"><span class="i-icon">🌐</span><span><b>Geo</b><small>Conflict · sanctions · oil risk</small></span></span><span class="check">✓</span></button>
+                </div>
+                <div class="selected" id="selected">Selected · Politics · Equity</div>
+              </section>
+
+              <section class="screen">
+                <span class="badge">One complete path</span>
+                <h2 class="title">Understand every signal</h2>
+                <p class="body">See the signal, open the context, then ask AI Broker.</p>
+
+                <div class="glass">
+                  <div class="ios-card workflow-card">
+                    <div class="workflow-inner">
+                      <div class="workflow-feed">
+                        <div class="card-top"><span class="card-title">Signals Feed</span><span class="tag gray" id="focusBadge">Focus · Politics, Equity</span></div>
+                        <div class="feed-list">
+                          <article class="feed featured workflow-feature">
+                            <h4 id="wfTitle">Trump visit odds rise after China trade signals</h4>
+                            <div class="tags"><span class="tag purple" id="wfCat">Politics</span><span class="tag green">Selected</span></div>
+                          </article>
+                          <article class="feed">
+                            <h4 id="wfTitle2">NVIDIA supply update lifts AI hardware sentiment</h4>
+                            <div class="tags"><span class="tag blue" id="wfCat2">Equity</span><span class="tag orange">Watch</span></div>
+                          </article>
+                        </div>
+                        <div class="tap-ring"></div>
+                        <div class="step-strip"><span>Feed</span><span>Detail</span><span>AI Broker</span></div>
+                      </div>
+
+                      <div class="detail-sheet">
+                        <div class="handle"></div>
+                        <div class="detail-head"><span class="detail-title">Signal Detail</span><span class="tag blue">Context</span></div>
+                        <div class="info-row"><b>Summary</b><span id="summary">Policy tone and diplomacy headlines may improve this visit scenario.</span></div>
+                        <div class="info-row"><b>Related Market</b><span id="market">Trump visits China in 2025? · YES 62%</span></div>
+                        <div class="info-row"><b>Key Risk</b><span id="risk">Momentum may fade if policy tone turns more aggressive again.</span></div>
+
+                        <div class="ai-area">
+                          <div class="bubble me">What confirms this signal?</div>
+                          <div class="bubble ai" id="aiReply">Watch policy headlines, market odds, and sector reactions.</div>
+                          <div class="input"><span>Ask AI Broker...</span><span class="spark">✦</span></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="screen">
+                <span class="badge">Optional upgrade</span>
+                <h2 class="title">Choose your plan</h2>
+                <p class="body">Free gives you the basics. Pro / Max unlock deeper AI Broker access.</p>
+
+                <div class="pay-list">
+                  <div class="mini-plan"><div><b>Free</b><small>Basic signals and AI access.</small></div><span class="pill">$0</span></div>
+                  <div class="mini-plan"><div><b>Pro</b><small>Stronger AI Broker and portfolio tools.</small></div><span class="pill">3-day trial</span></div>
+                  <div class="mini-plan"><div><b>Max</b><small>Best model and advanced research tools.</small></div><span class="pill">3-day trial</span></div>
+                </div>
+
+                <button class="details-btn" onclick="openPay()">View subscription details <span>↗</span></button>
+                <div class="subnote">Badges show paid tier only, not returns.</div>
+              </section>
+
+              <section class="screen">
+                <div class="complete">
+                  <div>
+                    <div class="complete-icon">✓</div>
+                    <h2>Your Signal Feed is ready</h2>
+                    <p>Questflow will surface signals based on your selected focus.</p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <footer class="footer" id="footer">
+            <div class="dots" id="dots">
+              <span class="dot active"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+            <div class="buttons">
+              <button class="back-bottom" id="bottomBack" onclick="go(-1)">‹</button>
+              <button class="next" id="nextBtn" onclick="go(1)">Next</button>
+            </div>
+          </footer>
+
+          <div class="pay-modal" id="payModal">
+            <div class="pay-sheet">
+              <div class="grabber"></div>
+              <div class="sheet-head">
+                <div>
+                  <h3>Unlock deeper AI Broker access</h3>
+                  <p>Try Pro / Max free for 3 days.</p>
+                </div>
+                <button class="close" onclick="closePay()">×</button>
+              </div>
+
+              <div class="plan-stack">
+                <div class="plan">
+                  <div class="plan-head"><div><h4>Free</h4><div class="price">$0</div></div><div class="badges"><span class="mini-badge gray">Basic</span></div></div>
+                  <p>Basic signals, public profiles, basic AI summaries, and manual trading.</p>
+                </div>
+                <div class="plan feature">
+                  <div class="plan-head"><div><h4>Pro</h4><div class="price">$19.99/mo</div></div><div class="badges"><span class="mini-badge blue">Blue Pro</span><span class="mini-badge green">3-day trial</span></div></div>
+                  <p>Stronger AI Broker, Portfolio Studio, fork / publish portfolios, and 1 scoped auto-copy.</p>
+                </div>
+                <div class="plan">
+                  <div class="plan-head"><div><h4>Max</h4><div class="price">$99.99/mo</div></div><div class="badges"><span class="mini-badge gold">Gold Max</span><span class="mini-badge green">3-day trial</span></div></div>
+                  <p>Best model, model picker, multi-agent research, multi-portfolio tools, and advanced risk control.</p>
+                </div>
+              </div>
+              <button class="start">Start 3-day free trial</button>
+              <div class="legal">3-day free trial applies before paid billing. Verified titles must be earned.</div>
+            </div>
+          </div>
+        </div>
+        <div class="home"></div>
+      </div>
+    </div>
+  </main>
+
+  <aside class="meta">
+    <h3>Refined build notes</h3>
+    <div class="meta-row"><b>Style</b><span>Cleaner Apple-like spacing and native sheet</span></div>
+    <div class="meta-row"><b>Motion</b><span>CSS loop for P3, no JS timer jump</span></div>
+    <div class="meta-row"><b>Flow</b><span>P1 value / P2 focus / P3 path / P4 plan</span></div>
+    <div class="meta-row"><b>Subscription</b><span>Light page + detail card</span></div>
+  </aside>
+</div>
+
+<script>
+let current=0;
+const track=document.getElementById('track');
+const dots=[...document.querySelectorAll('.dot')];
+const nextBtn=document.getElementById('nextBtn');
+const bottomBack=document.getElementById('bottomBack');
+const navBack=document.getElementById('navBack');
+const footer=document.getElementById('footer');
+let selected=['Politics','Equity'];
+
+const dataset={
+  Politics:{title:'Trump visit odds rise after China trade signals',cat:'Politics',cls:'purple',summary:'Policy tone and diplomacy headlines may improve this visit scenario.',market:'Trump visits China in 2025? · YES 62%',risk:'Momentum may fade if policy tone turns more aggressive again.',ai:'Watch policy headlines, market odds, and sector reactions.'},
+  Equity:{title:'NVIDIA supply update lifts AI hardware sentiment',cat:'Equity',cls:'blue',summary:'Supply-side easing may support near-term sentiment in AI-linked equities.',market:'NVIDIA-related AI sentiment basket · Watch',risk:'Risk reverses if margins or delivery constraints worsen.',ai:'Watch follow-through in AI hardware names and options activity.'},
+  Crypto:{title:'BTC whale long detected during range breakout',cat:'Crypto',cls:'blue',summary:'Large positioning suggests stronger directional intent around breakout levels.',market:'BTC directional move probability · Risk-on',risk:'Breakout fails if spot volume weakens and open interest resets lower.',ai:'Watch funding, OI expansion, and follow-through above resistance.'},
+  Macro:{title:'Rate-cut odds shift after softer inflation print',cat:'Macro',cls:'orange',summary:'Cooling inflation can change short-term policy expectations across assets.',market:'Fed rate-cut probability · Rising',risk:'The move may reverse if labor data stays too strong.',ai:'Watch rate-cut probabilities, bonds, and USD reaction.'},
+  Geo:{title:'Ceasefire headlines reduce oil risk premium',cat:'Geo',cls:'green',summary:'Geopolitical easing can lower immediate commodity and risk-off pressure.',market:'Oil risk premium sensitivity · Lower',risk:'Risk reappears if follow-up negotiations break down.',ai:'Watch follow-up headlines, crude reaction, and safe-haven flows.'}
+};
+
+function render(){
+  track.style.transform=`translate3d(${-current*100}%,0,0)`;
+  dots.forEach((d,i)=>d.classList.toggle('active',i===current && i<4));
+  nextBtn.textContent=current===3?'Enter App':'Next';
+  footer.style.display=current===4?'none':'block';
+  bottomBack.style.visibility=current===0?'hidden':'visible';
+  navBack.style.visibility=current===0?'hidden':'visible';
+  document.querySelectorAll('.interest').forEach(btn=>{
+    btn.classList.toggle('active',selected.includes(btn.dataset.interest));
+  });
+  document.getElementById('selected').textContent='Selected · '+selected.join(' · ');
+  renderWorkflow();
+}
+function go(dir){
+  if(current===4 && dir>0){restart();return}
+  current=Math.max(0,Math.min(4,current+dir));
+  render();
+}
+function restart(){
+  closePay();
+  current=0;
+  selected=['Politics','Equity'];
+  render();
+}
+function skip(){
+  current=3;
+  render();
+}
+function toggleInterest(name){
+  if(selected.includes(name)){
+    if(selected.length===1)return;
+    selected=selected.filter(x=>x!==name);
+  }else selected.push(name);
+  render();
+}
+function renderWorkflow(){
+  const a=dataset[selected[0]]||dataset.Politics;
+  const b=dataset[selected[1]]||dataset[selected[0]]||dataset.Equity;
+  const cat=document.getElementById('wfCat');
+  const cat2=document.getElementById('wfCat2');
+  document.getElementById('focusBadge').textContent='Focus · '+selected.join(', ');
+  document.getElementById('wfTitle').textContent=a.title;
+  cat.textContent=a.cat;
+  cat.className='tag '+a.cls;
+  document.getElementById('wfTitle2').textContent=b.title;
+  cat2.textContent=b.cat;
+  cat2.className='tag '+b.cls;
+  document.getElementById('summary').textContent=a.summary;
+  document.getElementById('market').textContent=a.market;
+  document.getElementById('risk').textContent=a.risk;
+  document.getElementById('aiReply').textContent=a.ai;
+}
+function openPay(){document.getElementById('payModal').classList.add('open')}
+function closePay(){document.getElementById('payModal').classList.remove('open')}
+document.getElementById('payModal').addEventListener('click',e=>{if(e.target.id==='payModal')closePay()});
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight')go(1);
+  if(e.key==='ArrowLeft')go(-1);
+  if(e.key==='Escape')closePay();
+});
+render();
+</script>
+</body>
+</html>
