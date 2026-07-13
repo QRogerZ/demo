@@ -2,6 +2,7 @@ const pages = {
   chat: document.querySelector("#page-chat"),
   feed: document.querySelector("#page-feed"),
   markets: document.querySelector("#page-markets"),
+  watchlist: document.querySelector("#page-watchlist"),
   detail: document.querySelector("#page-detail"),
   token: document.querySelector("#page-token-detail"),
   profile: document.querySelector("#page-profile"),
@@ -243,6 +244,54 @@ const markets = {
     leverage: "n/a",
     position: null,
     chart: "M8 92 C42 88 56 72 82 76 S120 96 150 70 184 46 216 72 246 58 278 64 302 48 324 36"
+  },
+  "EUR-USD": {
+    name: "EUR-USD",
+    symbol: "EUR",
+    category: "Currency",
+    price: "$1.0842",
+    change: "+0.18%",
+    volume: "$6.8B",
+    funding: "n/a",
+    openInterest: "n/a",
+    oracle: "$1.0843",
+    mark: "$1.0842",
+    high: "$1.0878",
+    low: "$1.0796",
+    leverage: "n/a",
+    position: null
+  },
+  "USD-JPY": {
+    name: "USD-JPY",
+    symbol: "JPY",
+    category: "Currency",
+    price: "¥157.42",
+    change: "-0.12%",
+    volume: "$5.4B",
+    funding: "n/a",
+    openInterest: "n/a",
+    oracle: "¥157.44",
+    mark: "¥157.42",
+    high: "¥158.10",
+    low: "¥156.88",
+    leverage: "n/a",
+    position: null
+  },
+  "GBP-USD": {
+    name: "GBP-USD",
+    symbol: "GBP",
+    category: "Currency",
+    price: "$1.2716",
+    change: "+0.09%",
+    volume: "$3.7B",
+    funding: "n/a",
+    openInterest: "n/a",
+    oracle: "$1.2717",
+    mark: "$1.2716",
+    high: "$1.2762",
+    low: "$1.2674",
+    leverage: "n/a",
+    position: null
   }
 };
 
@@ -259,11 +308,18 @@ const marketMeta = {
   NVDAx: { type: "Synthetic", assetClass: "Tradfi", assetName: "NVIDIA" },
   TSLAx: { type: "Synthetic", assetClass: "Tradfi", assetName: "Tesla" },
   SPYx: { type: "Synthetic", assetClass: "Tradfi", assetName: "S&P 500" },
-  "Election Winner": { type: "Prediction", assetClass: "Prediction", assetName: "US Election" }
+  "Election Winner": { type: "Prediction", assetClass: "Prediction", assetName: "US Election" },
+  "EUR-USD": { type: "Currency", assetClass: "Tradfi", assetName: "Euro / US Dollar" },
+  "USD-JPY": { type: "Currency", assetClass: "Tradfi", assetName: "US Dollar / Japanese Yen" },
+  "GBP-USD": { type: "Currency", assetClass: "Tradfi", assetName: "British Pound / US Dollar" }
 };
 
 const marketOrder = Object.keys(markets);
-let watchlist = ["BTC-USDC", "ETH-USDC", "HYPE-USDC"];
+let watchlist = [
+  "BTC-USDC", "ETH-USDC", "SOL-USDC",
+  "BTC-USD", "ETH-USD", "SOL-USD",
+  "NVDAx", "TSLAx", "SPYx"
+];
 
 const signals = [
   { direction: "SHORT", coin: "ETH", title: "Whale Entry", amount: "$17.4k", desc: "A T1 whale increased a $17.4k short position (8.7x median).", pair: "ETH-USDC", time: "29m ago" },
@@ -295,7 +351,9 @@ const choiceTitle = document.querySelector("[data-choice-title]");
 const choiceOptions = document.querySelector("[data-choice-options]");
 const watchlistSearch = document.querySelector("[data-watchlist-search]");
 const appContent = document.querySelector(".app-content");
-const newChatButton = document.querySelector("[data-new-chat]");
+const watchlistEntry = document.querySelector("[data-open-watchlist-page]");
+const tokenAIComposer = document.querySelector("[data-token-ai-composer]");
+const tokenAIInput = document.querySelector("[data-token-ai-input]");
 
 let currentModel = "Kimi K2.6";
 let toastTimer;
@@ -309,13 +367,22 @@ let currentTimeframe = "15m";
 let selectedCandleIndex = -1;
 let chartTouchActive = false;
 let watchlistCategory = "all";
-let currentDetailTab = "info";
+let currentDetailTab = "signals";
 let detailTabTouchStartX = 0;
 let tokenReturnPage = "markets";
 let tokenReturnScroll = 0;
 let currentSignalIndex = 0;
 const favoriteSignals = new Set();
 const timeframeOptions = ["1m", "5m", "15m", "1H", "4H", "1D", "1W"];
+const marketCategoryOptions = [
+  { value: "all", label: "All" },
+  { value: "perps", label: "Perps" },
+  { value: "spot", label: "Spot" },
+  { value: "crypto", label: "Crypto" },
+  { value: "tradfi", label: "Tradfi" },
+  { value: "hip3", label: "HIP-3" },
+  { value: "prelaunch", label: "Pre-launch" }
+];
 const candleStore = {};
 
 function showPage(name) {
@@ -323,10 +390,10 @@ function showPage(name) {
     page.classList.toggle("is-active", pageName === name);
   });
 
-  const isMain = name === "chat" || name === "feed" || name === "markets";
+  const isMain = name === "chat" || name === "feed" || name === "markets" || name === "watchlist";
   mainHeader.classList.toggle("is-hidden", !isMain);
   composer.classList.toggle("is-hidden", name !== "chat");
-  newChatButton.classList.toggle("is-hidden", name !== "chat");
+  watchlistEntry.classList.toggle("is-active", name === "watchlist");
 
   topTabs.forEach((tab) => {
     tab.classList.toggle("is-active", tab.dataset.tab === name);
@@ -409,13 +476,16 @@ function marketRow(name, options = {}) {
   const watched = watchlist.includes(name);
   const asSheet = options.sheet ? "sheet-add" : "";
   const kind = marketKind(market);
+  const meta = options.watchlist
+    ? `<em><span class="market-category-tag">${marketCategoryLabel(primaryWatchlistCategory(name))}</span></em>`
+    : `<em>${kind.type} · ${kind.assetClass}</em>`;
   return `
     <article class="market-row ${asSheet}" data-market-name="${name}" data-open-token="${name}">
       <button class="market-row-main" type="button">
         <span class="token-icon ${tokenIcon(market.symbol)}">${market.symbol === "BTC" ? "₿" : market.symbol.slice(0, 1)}</span>
         <span class="market-copy">
           <strong>${market.name}</strong>
-          <em>${kind.type} · ${kind.assetClass}</em>
+          ${meta}
         </span>
       </button>
       <button class="market-price" type="button">
@@ -450,12 +520,44 @@ function matchesMarketCategory(name, category) {
   return false;
 }
 
+function volumeValue(value) {
+  const amount = Number.parseFloat(String(value).replace(/[^0-9.]/g, "")) || 0;
+  if (String(value).includes("B")) return amount * 1e9;
+  if (String(value).includes("M")) return amount * 1e6;
+  if (String(value).includes("K")) return amount * 1e3;
+  return amount;
+}
+
+function primaryWatchlistCategory(name) {
+  const meta = marketKind(markets[name]);
+  if (meta.type === "Perpetual") return "perps";
+  if (meta.type === "Spot") return "spot";
+  if (meta.assetClass === "Crypto") return "crypto";
+  if (meta.assetClass === "Tradfi") return "tradfi";
+  if (meta.type === "HIP-3") return "hip3";
+  if (meta.type === "Pre-launch") return "prelaunch";
+  return "all";
+}
+
+function marketCategoryLabel(value) {
+  return marketCategoryOptions.find((category) => category.value === value)?.label || "All";
+}
+
+function orderedWatchlistNames() {
+  return [...watchlist];
+}
+
+function renderWatchlistGroups() {
+  const orderedNames = orderedWatchlistNames();
+  const container = document.querySelector("[data-watchlist-groups]");
+  container.innerHTML = orderedNames.length
+    ? orderedNames.map((name) => marketRow(name, { watchlist: true })).join("")
+    : `<div class="watchlist-group-empty">No watched markets</div>`;
+}
+
 function renderMarketLists() {
-  const watchNames = watchlist;
-  const exploreNames = marketOrder;
-  document.querySelector("[data-watchlist-list]").innerHTML = watchNames.map((name) => marketRow(name)).join("");
-  document.querySelector("[data-explore-list]").innerHTML = exploreNames.map((name) => marketRow(name)).join("");
-  document.querySelector("[data-watchlist-empty]").classList.toggle("is-visible", watchlist.length === 0);
+  document.querySelector("[data-markets-list]").innerHTML = marketOrder.map((name) => marketRow(name)).join("");
+  renderWatchlistGroups();
   renderWatchlistSearch();
 }
 
@@ -478,7 +580,7 @@ function toggleWatch(name, quiet = false) {
   }
   renderMarketLists();
   renderSignals();
-  if (pages.token.classList.contains("is-active")) renderTokenDetail(name);
+  if (pages.token.classList.contains("is-active")) renderTokenDetail(currentToken, tokenSource);
   if (pages.detail.classList.contains("is-active")) updateSignalDetailWatch();
   if (!quiet) showToast(exists ? `${name} 已从 Watchlist 移除` : `${name} 已添加到 Watchlist`);
 }
@@ -557,7 +659,7 @@ function updateSignalDetailWatch() {
 }
 
 function numericPrice(value) {
-  const cleaned = String(value).replace(/[$,¢]/g, "");
+  const cleaned = String(value).replace(/[$,¢¥]/g, "");
   const parsed = Number(cleaned);
   if (String(value).includes("¢")) return parsed / 100;
   return Number.isFinite(parsed) ? parsed : 1;
@@ -565,6 +667,7 @@ function numericPrice(value) {
 
 function formatChartPrice(value, market) {
   if (market.price.includes("¢")) return `${Math.round(value * 100)}¢`;
+  if (market.price.includes("¥")) return `¥${value.toFixed(2)}`;
   if (value >= 1000) return `$${value.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
   if (value >= 10) return `$${value.toFixed(2)}`;
   if (value >= 1) return `$${value.toFixed(3)}`;
@@ -792,17 +895,35 @@ function renderTokenDetail(name, source = tokenSource) {
   const watched = watchlist.includes(name);
 
   document.querySelector("[data-token-header]").textContent = market.name;
+  const headerIcon = document.querySelector("[data-token-header-icon]");
+  headerIcon.textContent = market.symbol === "BTC" ? "₿" : market.symbol.slice(0, 1);
+  headerIcon.className = `token-header-icon ${tokenIcon(market.symbol)}`;
   document.querySelector("[data-token-category]").textContent = market.category;
   document.querySelector("[data-token-name]").textContent = market.name;
   document.querySelector("[data-token-symbol]").textContent = market.symbol;
   document.querySelector("[data-token-change]").textContent = market.change;
   document.querySelector("[data-token-change]").className = isUp(market.change) ? "up" : "down";
   const tokenWatch = document.querySelector("[data-token-watch]");
-  tokenWatch.textContent = watched ? "✓" : "+";
   tokenWatch.classList.toggle("is-watched", watched);
   tokenWatch.setAttribute("aria-label", `${watched ? "Remove" : "Add"} ${name} ${watched ? "from" : "to"} Watchlist`);
-  document.querySelector("[data-token-source]").textContent = source === "watchlist" ? "From Watchlist" : `From ${source}`;
-  document.querySelector("[data-watchlist-nav]").classList.toggle("is-hidden", source !== "watchlist" || watchlist.length < 2);
+  const orderedNames = orderedWatchlistNames();
+  const watchedIndex = orderedNames.indexOf(name);
+  const canSwitchWatchlist = source === "watchlist" && watchedIndex !== -1 && orderedNames.length > 1;
+  const previousButton = document.querySelector("[data-prev-token]");
+  const nextButton = document.querySelector("[data-next-token]");
+  previousButton.hidden = !canSwitchWatchlist;
+  nextButton.hidden = !canSwitchWatchlist;
+  previousButton.disabled = !canSwitchWatchlist || watchedIndex === 0;
+  nextButton.disabled = !canSwitchWatchlist || watchedIndex === orderedNames.length - 1;
+  if (canSwitchWatchlist) {
+    previousButton.setAttribute("aria-label", watchedIndex === 0
+      ? "No previous watched market"
+      : `Previous watched market: ${orderedNames[watchedIndex - 1]}`);
+    nextButton.setAttribute("aria-label", watchedIndex === orderedNames.length - 1
+      ? "No next watched market"
+      : `Next watched market: ${orderedNames[watchedIndex + 1]}`);
+  }
+  tokenAIInput.placeholder = `Ask AI about ${name}…`;
   renderCandleChart(name);
 
   const info = [
@@ -855,7 +976,7 @@ function openToken(name, source = "markets") {
   if (activeEntry?.[0] !== "token") {
     tokenReturnPage = activeEntry?.[0] || (source === "feed" ? "feed" : "markets");
     tokenReturnScroll = appContent.scrollTop;
-    currentDetailTab = "info";
+    currentDetailTab = "signals";
   }
   renderTokenDetail(name, source);
   showPage("token");
@@ -863,15 +984,17 @@ function openToken(name, source = "markets") {
 }
 
 function moveWatchlistToken(direction) {
-  if (!watchlist.length) return;
-  const index = watchlist.indexOf(currentToken);
-  const safeIndex = index === -1 ? 0 : index;
-  const nextIndex = (safeIndex + direction + watchlist.length) % watchlist.length;
-  renderTokenDetail(watchlist[nextIndex], "watchlist");
+  const orderedNames = orderedWatchlistNames();
+  if (!orderedNames.length) return;
+  const index = orderedNames.indexOf(currentToken);
+  if (index === -1) return;
+  const nextIndex = index + direction;
+  if (nextIndex < 0 || nextIndex >= orderedNames.length) return;
+  renderTokenDetail(orderedNames[nextIndex], "watchlist");
 }
 
 function setDetailTab(name, animate = true) {
-  const tabs = ["info", "position", "signals"];
+  const tabs = ["signals", "info", "position"];
   if (!tabs.includes(name)) return;
   const previousIndex = tabs.indexOf(currentDetailTab);
   const nextIndex = tabs.indexOf(name);
@@ -892,7 +1015,7 @@ function setDetailTab(name, animate = true) {
 }
 
 function moveDetailTab(direction) {
-  const tabs = ["info", "position", "signals"];
+  const tabs = ["signals", "info", "position"];
   const nextIndex = Math.max(0, Math.min(tabs.length - 1, tabs.indexOf(currentDetailTab) + direction));
   setDetailTab(tabs[nextIndex]);
 }
@@ -954,7 +1077,14 @@ topTabs.forEach((tab) => {
 });
 
 document.querySelector("[data-open-sidebar]").addEventListener("click", openSidebar);
-document.querySelector("[data-new-chat]").addEventListener("click", resetChat);
+document.querySelector("[data-open-watchlist-page]").addEventListener("click", () => {
+  showPage("watchlist");
+  appContent.scrollTop = 0;
+});
+document.querySelector("[data-sidebar-new-chat]").addEventListener("click", () => {
+  closeSidebar();
+  resetChat();
+});
 dim.addEventListener("click", closeSidebar);
 
 document.querySelector("[data-open-profile]").addEventListener("click", () => {
@@ -1085,13 +1215,6 @@ pages.detail.addEventListener("click", (event) => {
   toggleWatch(watch.dataset.detailToggleWatch);
 });
 
-document.querySelectorAll("[data-market-tab]").forEach((button) => {
-  button.addEventListener("click", () => {
-    document.querySelectorAll("[data-market-tab]").forEach((tab) => tab.classList.toggle("is-active", tab === button));
-    document.querySelectorAll("[data-market-panel]").forEach((panel) => panel.classList.toggle("is-active", panel.dataset.marketPanel === button.dataset.marketTab));
-  });
-});
-
 document.querySelectorAll("[data-open-watchlist-sheet]").forEach((button) => {
   button.addEventListener("click", () => {
     renderWatchlistSearch();
@@ -1109,9 +1232,19 @@ document.querySelector("#page-markets").addEventListener("click", (event) => {
 
   const token = event.target.closest("[data-open-token]");
   if (token) {
-    const activePanel = document.querySelector("[data-market-panel].is-active");
-    openToken(token.dataset.openToken, activePanel?.dataset.marketPanel === "watchlist" ? "watchlist" : "markets");
+    openToken(token.dataset.openToken, "markets");
   }
+});
+
+document.querySelector("#page-watchlist").addEventListener("click", (event) => {
+  const watch = event.target.closest("[data-toggle-watch]");
+  if (watch) {
+    toggleWatch(watch.dataset.toggleWatch);
+    return;
+  }
+
+  const token = event.target.closest("[data-open-token]");
+  if (token) openToken(token.dataset.openToken, "watchlist");
 });
 
 watchlistSheet.addEventListener("click", (event) => {
@@ -1123,8 +1256,9 @@ watchlistSheet.addEventListener("click", (event) => {
 
   const token = event.target.closest("[data-open-token]");
   if (token) {
+    const source = pages.watchlist.classList.contains("is-active") ? "watchlist" : "markets";
     closeSheets();
-    openToken(token.dataset.openToken, "markets");
+    openToken(token.dataset.openToken, source);
   }
 });
 
@@ -1138,7 +1272,13 @@ document.querySelector("[data-watchlist-categories]").addEventListener("click", 
 });
 
 document.querySelector("[data-token-watch]").addEventListener("click", () => toggleWatch(currentToken));
-document.querySelector("[data-token-ask-ai]").addEventListener("click", () => askAI(`分析 ${currentToken} 当前市场、持仓和相关 signal`, currentToken));
+tokenAIComposer.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const prompt = tokenAIInput.value.trim();
+  if (!prompt) return;
+  tokenAIInput.value = "";
+  askAI(prompt, currentToken);
+});
 document.querySelector("[data-open-trade-confirm]").addEventListener("click", () => {
   document.querySelector("[data-trade-market]").textContent = currentToken;
   openSheet(tradeConfirmSheet);
@@ -1150,21 +1290,15 @@ document.querySelector("[data-continue-trade]").addEventListener("click", () => 
 });
 document.querySelector("[data-prev-token]").addEventListener("click", () => moveWatchlistToken(-1));
 document.querySelector("[data-next-token]").addEventListener("click", () => moveWatchlistToken(1));
-
 document.querySelector("[data-token-swipe]").addEventListener("touchstart", (event) => {
-  if (event.target.closest("[data-candle-wrap]")) return;
   touchStartX = event.touches[0].clientX;
-});
+}, { passive: true });
 
 document.querySelector("[data-token-swipe]").addEventListener("touchend", (event) => {
-  if (chartTouchActive || event.target.closest("[data-candle-wrap]")) {
-    chartTouchActive = false;
-    return;
-  }
   const delta = event.changedTouches[0].clientX - touchStartX;
-  if (Math.abs(delta) < 45 || tokenSource !== "watchlist") return;
+  if (Math.abs(delta) < 45 || !watchlist.includes(currentToken) || watchlist.length < 2) return;
   moveWatchlistToken(delta > 0 ? -1 : 1);
-});
+}, { passive: true });
 
 document.querySelector("[data-timeframe-switch]").addEventListener("click", (event) => {
   const button = event.target.closest("[data-timeframe]");
@@ -1196,12 +1330,8 @@ document.querySelector("[data-candle-wrap]").addEventListener("touchmove", (even
 });
 
 document.querySelector("[data-candle-wrap]").addEventListener("touchend", (event) => {
-  const delta = event.changedTouches[0].clientX - touchStartX;
   chartTouchActive = false;
   event.stopPropagation();
-  if (Math.abs(delta) >= 55 && tokenSource === "watchlist") {
-    moveWatchlistToken(delta > 0 ? -1 : 1);
-  }
 });
 
 document.querySelectorAll("[data-detail-tab]").forEach((button) => {

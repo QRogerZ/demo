@@ -21,14 +21,13 @@
             <button class="top-tab is-active" type="button" data-tab="chat" aria-label="AI Chat" title="AI Chat">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5 3.5 21v-5A8 8 0 1 1 7 18.5Z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
             </button>
-            <button class="top-tab" type="button" data-tab="feed" aria-label="Signal Feed" title="Signal Feed">
+            <button class="top-tab" type="button" data-tab="feed" aria-label="Signals Feed" title="Signals Feed">
               <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"></path><circle cx="18" cy="18" r="1.5"></circle></svg>
             </button>
-            <button class="top-tab" type="button" data-tab="markets" aria-label="Markets" title="Markets">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V9M10 19V5M16 19v-7M22 19V3"></path><path d="M2 19h20"></path></svg>
-            </button>
           </div>
-          <button class="round-button" type="button" data-new-chat aria-label="New Chat">✚</button>
+          <button class="round-button watchlist-entry" type="button" data-open-watchlist-page aria-label="Watchlist" title="Watchlist">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h11v16l-5.5-3.2-5.5 3.2Z"></path></svg>
+          </button>
         </header>
 
         <section class="app-content">
@@ -65,25 +64,24 @@
             <div class="markets-title-row">
               <div>
                 <h1>Markets</h1>
-                <p>Watch markets and signals in one place.</p>
+                <p>Browse prices and open any market.</p>
               </div>
               <button class="round-button plain add-market-button" type="button" data-open-watchlist-sheet aria-label="Search Markets">＋</button>
             </div>
-            <div class="segmented markets-segmented">
-              <button class="segment is-active" type="button" data-market-tab="watchlist">Watchlist</button>
-              <button class="segment" type="button" data-market-tab="explore">Explore</button>
-            </div>
-            <div class="market-panel is-active" data-market-panel="watchlist">
-              <div class="empty-state" data-watchlist-empty>
-                <strong>No markets watched yet</strong>
-                <span>Add tokens to keep them close.</span>
-                <button type="button" data-open-watchlist-sheet>Add Market</button>
+            <div class="market-list" data-markets-list></div>
+          </section>
+
+          <section class="page page-watchlist" id="page-watchlist">
+            <div class="watchlist-page-header">
+              <div>
+                <h1>Watchlist</h1>
+                <p>Your followed markets, all in one place.</p>
               </div>
-              <div class="market-list" data-watchlist-list></div>
+              <div class="watchlist-page-actions">
+                <button class="round-button plain" type="button" data-open-watchlist-sheet aria-label="Search Markets">＋</button>
+              </div>
             </div>
-            <div class="market-panel" data-market-panel="explore">
-              <div class="market-list" data-explore-list></div>
-            </div>
+            <div class="market-list watchlist-page-list" data-watchlist-groups></div>
           </section>
 
           <section class="page page-detail" id="page-detail">
@@ -127,11 +125,26 @@
 
           <section class="page page-token-detail" id="page-token-detail">
             <header class="sub-header token-sub-header">
-              <button class="round-button plain" type="button" data-back-token aria-label="返回">‹</button>
-              <strong data-token-header>HYPE-USDC</strong>
-              <button class="round-button plain watch-icon" type="button" data-token-watch aria-label="Add HYPE-USDC to Watchlist">＋</button>
+              <button class="token-back-button" type="button" data-back-token aria-label="返回">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+              </button>
+              <div class="token-title-swipe" data-token-swipe>
+                <button class="token-switch-button" type="button" data-prev-token aria-label="Previous watched market">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 17-5-5 5-5"></path></svg>
+                </button>
+                <span class="token-title-center">
+                  <span class="token-header-icon" data-token-header-icon>H</span>
+                  <strong data-token-header>HYPE-USDC</strong>
+                </span>
+                <button class="token-switch-button" type="button" data-next-token aria-label="Next watched market">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 7 5 5-5 5"></path></svg>
+                </button>
+              </div>
+              <button class="token-watch-button" type="button" data-token-watch aria-label="Add HYPE-USDC to Watchlist">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h11v16l-5.5-3.2-5.5 3.2Z"></path></svg>
+              </button>
             </header>
-            <article class="token-hero" data-token-swipe>
+            <article class="token-hero">
               <div class="token-head-row">
                 <div class="token-title-block">
                   <span data-token-category>Crypto</span>
@@ -157,27 +170,22 @@
                 <button type="button" data-timeframe="1W">1W</button>
               </div>
               <button class="token-trade-button" type="button" data-open-trade-confirm>Trade ↗</button>
-              <div class="watchlist-nav" data-watchlist-nav>
-                <button type="button" data-prev-token>‹</button>
-                <span data-token-source>From Watchlist</span>
-                <button type="button" data-next-token>›</button>
-              </div>
             </article>
             <section class="token-detail-tabs">
               <div class="token-tab-bar" role="tablist" aria-label="Market detail sections">
-                <button class="is-active" type="button" role="tab" data-detail-tab="info">Info</button>
+                <button class="is-active" type="button" role="tab" data-detail-tab="signals">Signals</button>
+                <button type="button" role="tab" data-detail-tab="info">Info</button>
                 <button type="button" role="tab" data-detail-tab="position">Position</button>
-                <button type="button" role="tab" data-detail-tab="signals">Signals</button>
               </div>
               <div class="token-tab-content" data-detail-tab-content>
-                <section class="token-tab-panel is-active" data-detail-panel="info">
+                <section class="token-tab-panel is-active" data-detail-panel="signals">
+                  <div class="related-signals" data-related-signals></div>
+                </section>
+                <section class="token-tab-panel" data-detail-panel="info">
                   <article class="info-card market-info-card" data-token-market-info></article>
                 </section>
                 <section class="token-tab-panel" data-detail-panel="position">
                   <article class="info-card position-card" data-token-position></article>
-                </section>
-                <section class="token-tab-panel" data-detail-panel="signals">
-                  <div class="related-signals" data-related-signals></div>
                 </section>
               </div>
             </section>
@@ -252,9 +260,14 @@
           </section>
         </section>
 
-        <button class="token-ask-fab" type="button" data-token-ask-ai aria-label="Ask AI">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.15 3.1a7.4 7.4 0 0 0 4.4 4.4l3.1 1.15-3.1 1.15a7.4 7.4 0 0 0-4.4 4.4L12 20.3l-1.15-3.1a7.4 7.4 0 0 0-4.4-4.4l-3.1-1.15 3.1-1.15a7.4 7.4 0 0 0 4.4-4.4L12 3Z"></path><path d="m19 3 .35.95a2.3 2.3 0 0 0 1.4 1.4l.95.35-.95.35a2.3 2.3 0 0 0-1.4 1.4L19 8.4l-.35-.95a2.3 2.3 0 0 0-1.4-1.4l-.95-.35.95-.35a2.3 2.3 0 0 0 1.4-1.4L19 3Z"></path></svg>
-        </button>
+        <form class="token-ai-composer" data-token-ai-composer>
+          <textarea rows="1" placeholder="Ask AI about HYPE-USDC…" data-token-ai-input aria-label="Ask AI about this market"></textarea>
+          <div class="token-ai-actions">
+            <button class="small-icon" type="button" data-toast="图片上传仅作演示" aria-label="上传图片">＋</button>
+            <button class="small-icon" type="button" data-toast="语音输入仅作演示" aria-label="语音输入">◉</button>
+            <button class="send-button" type="submit" aria-label="发送">↑</button>
+          </div>
+        </form>
 
         <form class="composer" data-composer>
           <textarea rows="1" placeholder="Ask anything about markets" data-chat-input></textarea>
@@ -271,6 +284,7 @@
             <div class="brand-mark">Q</div>
             <strong>Questflow AI</strong>
           </div>
+          <button class="sidebar-new-chat" type="button" data-sidebar-new-chat><span>＋</span>New Chat</button>
           <button class="side-item" type="button" data-toast="通知仅作演示">通知</button>
           <button class="side-item" type="button" data-open-notification-market>Mock notification: BTC moved</button>
           <button class="side-item" type="button" data-toast="Favorites 已点击">Favorites</button>

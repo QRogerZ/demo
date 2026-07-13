@@ -125,10 +125,10 @@ button {
   position: absolute;
   top: 8px;
   left: 50%;
-  width: 154px;
+  width: 108px;
   height: 36px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 3px;
   padding: 3px;
   border-radius: 999px;
@@ -137,7 +137,7 @@ button {
 }
 
 [data-open-sidebar],
-[data-new-chat] {
+[data-open-watchlist-page] {
   position: absolute;
   top: 8px;
 }
@@ -146,8 +146,23 @@ button {
   left: 14px;
 }
 
-[data-new-chat] {
+[data-open-watchlist-page] {
   right: 14px;
+}
+
+.watchlist-entry svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.watchlist-entry.is-active {
+  color: #fff !important;
+  background: var(--primary) !important;
 }
 
 .top-tab {
@@ -175,18 +190,16 @@ button {
   background: var(--primary);
 }
 
-[data-new-chat].is-hidden {
-  display: none;
-}
-
 .app-shell:has(#page-feed.is-active) .main-header,
-.app-shell:has(#page-markets.is-active) .main-header {
+.app-shell:has(#page-markets.is-active) .main-header,
+.app-shell:has(#page-watchlist.is-active) .main-header {
   padding-left: 12px;
   padding-right: 12px;
 }
 
 .app-shell:has(#page-feed.is-active) .round-button:not(.plain),
-.app-shell:has(#page-markets.is-active) .round-button:not(.plain) {
+.app-shell:has(#page-markets.is-active) .round-button:not(.plain),
+.app-shell:has(#page-watchlist.is-active) .round-button:not(.plain) {
   width: 34px;
   height: 34px;
   color: #4f554d;
@@ -194,7 +207,8 @@ button {
 }
 
 .app-shell:has(#page-feed.is-active) .top-switch,
-.app-shell:has(#page-markets.is-active) .top-switch {
+.app-shell:has(#page-markets.is-active) .top-switch,
+.app-shell:has(#page-watchlist.is-active) .top-switch {
   height: 36px;
   background: #e8e5dd;
 }
@@ -884,6 +898,62 @@ button {
   margin-bottom: 10px;
 }
 
+.watchlist-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 2px 14px;
+}
+
+.watchlist-page-header h1 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 1.1;
+  letter-spacing: 0;
+}
+
+.watchlist-page-header p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.watchlist-page-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.watchlist-page-actions .round-button {
+  color: var(--primary);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.watchlist-page-list {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.market-category-tag {
+  display: inline-block;
+  padding: 1px 5px;
+  border: 1px solid #dedbd3;
+  border-radius: 5px;
+  color: #777b73;
+  background: rgba(245, 243, 238, 0.82);
+  font-size: 9px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.watchlist-group-empty {
+  padding: 14px 2px;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+}
+
 .market-search {
   height: 42px;
   display: flex;
@@ -1066,18 +1136,153 @@ button {
   border-bottom: 1px solid rgba(229, 225, 216, 0.72);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  grid-template-columns: 34px minmax(0, 1fr) 34px;
+  gap: 4px;
 }
 
-.token-sub-header .watch-icon {
+.token-back-button,
+.token-watch-button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  outline: 0;
+}
+
+.token-back-button {
+  border: 0;
+  color: #4f554d;
+  background: transparent;
+}
+
+.token-back-button svg {
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.token-watch-button {
+  border: 1px solid #d9ded9;
   color: var(--primary);
-  background: #e7ece8;
-  font-size: 18px;
+  background: rgba(255, 253, 249, 0.86);
 }
 
-.token-sub-header .watch-icon.is-watched {
+.token-watch-button svg {
+  width: 17px;
+  height: 17px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.token-watch-button.is-watched {
+  border-color: var(--primary);
   color: #fff;
   background: var(--primary);
-  font-size: 13px;
+}
+
+.token-watch-button.is-watched svg {
+  fill: currentColor;
+}
+
+.token-back-button:focus-visible,
+.token-watch-button:focus-visible {
+  outline: 2px solid rgba(15, 63, 54, 0.28);
+  outline-offset: 1px;
+}
+
+.token-title-swipe {
+  min-width: 0;
+  height: 38px;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) 26px;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  touch-action: pan-y;
+}
+
+.token-title-center {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.token-title-swipe strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.token-switch-button {
+  width: 26px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #697068;
+  background: var(--surface-3);
+  outline: 0;
+}
+
+.token-switch-button svg {
+  width: 16px;
+  height: 16px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.token-switch-button:focus-visible {
+  outline: 2px solid rgba(15, 63, 54, 0.32);
+  outline-offset: 1px;
+}
+
+.token-switch-button[hidden] {
+  visibility: hidden;
+}
+
+.token-switch-button:disabled {
+  color: #aeb1aa;
+  background: #f0eee9;
+  opacity: 0.56;
+  cursor: default;
+}
+
+.token-header-icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: #fff;
+  background: #1c6f60;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.token-header-icon.btc {
+  background: #f39a32;
+}
+
+.token-header-icon.eth {
+  background: #6574c9;
 }
 
 .token-hero {
@@ -1327,31 +1532,6 @@ button {
   background: var(--primary);
 }
 
-.watchlist-nav {
-  display: grid;
-  grid-template-columns: 34px 1fr 34px;
-  align-items: center;
-  gap: 8px;
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 12px;
-  text-align: center;
-}
-
-.watchlist-nav.is-hidden {
-  display: none;
-}
-
-.watchlist-nav button {
-  height: 32px;
-  border: 0;
-  border-radius: 50%;
-  color: var(--primary);
-  background: #e3eee8;
-  font-size: 20px;
-  font-weight: 900;
-}
-
 .market-info-card {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1456,39 +1636,60 @@ button {
   margin-top: 0;
 }
 
-.token-ask-fab {
+.token-ai-composer {
   position: absolute;
-  right: 16px;
-  bottom: calc(18px + env(safe-area-inset-bottom));
+  right: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  left: 10px;
   z-index: 9;
-  width: 50px;
-  height: 50px;
   display: none;
-  place-items: center;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  color: #fff;
-  background: var(--primary);
-  box-shadow: 0 6px 16px rgba(15, 63, 54, 0.2);
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 58px;
+  padding: 9px 10px 9px 13px;
+  border: 1px solid rgba(222, 217, 206, 0.94);
+  border-radius: 22px;
+  background: rgba(255, 253, 249, 0.98);
+  box-shadow: 0 8px 22px rgba(21, 25, 20, 0.14);
 }
 
-.app-shell:has(#page-token-detail.is-active) .token-ask-fab {
+.app-shell:has(#page-token-detail.is-active) .token-ai-composer {
   display: grid;
 }
 
-.token-ask-fab svg {
-  width: 23px;
-  height: 23px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.token-ai-composer textarea {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  padding: 8px 0 0;
+  resize: none;
+  border: 0;
+  outline: 0;
+  color: var(--text);
+  background: transparent;
+  font-size: 13px;
+}
+
+.token-ai-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.token-ai-actions .small-icon,
+.token-ai-actions .send-button {
+  width: 32px;
+  height: 32px;
+  flex-basis: 32px;
+}
+
+.token-ai-actions .send-button {
+  margin-left: 0;
 }
 
 .app-content:has(#page-token-detail.is-active) {
-  padding-bottom: 84px;
+  padding-bottom: 104px;
 }
 
 .position-empty {
@@ -1838,6 +2039,27 @@ button {
   align-items: center;
   gap: 9px;
   margin-bottom: 18px;
+}
+
+.sidebar-new-chat {
+  width: 100%;
+  height: 46px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 14px;
+  color: #fff;
+  background: var(--primary);
+  font-weight: 850;
+  text-align: left;
+}
+
+.sidebar-new-chat span {
+  font-size: 18px;
+  line-height: 1;
 }
 
 .brand-mark {
