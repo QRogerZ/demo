@@ -389,69 +389,123 @@ button {
   text-overflow: ellipsis;
 }
 
-.arena-banner {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 92px;
+.feed-index-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  width: 100%;
+  max-width: 100%;
   margin-bottom: 12px;
-  padding: 15px 16px;
-  border-radius: 22px;
-  color: #fff;
-  background:
-    linear-gradient(90deg, #101d19 0%, rgba(16, 29, 25, 0.9) 50%, #07100e 100%);
   overflow: hidden;
 }
 
-.arena-banner::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(90deg, transparent 0 26px, rgba(255, 255, 255, 0.06) 27px 28px),
-    radial-gradient(circle at 74% 46%, rgba(214, 238, 224, 0.18), transparent 25%);
-  opacity: 0.65;
+.feed-index-card {
+  min-width: 0;
+  height: 92px;
+  display: grid;
+  align-content: center;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--text);
+  background: rgba(255, 253, 249, 0.92);
+  box-shadow: var(--shadow);
+  text-align: left;
+  transition: transform 0.12s ease, background 0.12s ease, opacity 0.12s ease;
 }
 
-.arena-banner::after {
-  content: "♕";
-  position: absolute;
-  right: 78px;
-  top: 20px;
-  color: rgba(255, 255, 255, 0.18);
-  font-size: 52px;
-  line-height: 1;
+.feed-index-card:active {
+  background: #f0eee8;
+  opacity: 0.88;
+  transform: scale(0.975);
 }
 
-.arena-banner > * {
-  position: relative;
-  z-index: 1;
+.feed-index-card:focus-visible {
+  outline: 2px solid rgba(15, 63, 54, 0.3);
+  outline-offset: 1px;
 }
 
-.arena-banner span {
+.feed-index-head {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.feed-index-icon {
+  width: 19px;
+  height: 19px;
+  flex: 0 0 19px;
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  color: #fff;
+  background: var(--primary);
+  font-size: 7px;
+  font-weight: 900;
+}
+
+.feed-index-head strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 9px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feed-index-price,
+.feed-index-change {
   display: block;
-  margin-bottom: 4px;
-  color: rgba(255, 255, 255, 0.62);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.feed-index-quote {
+  min-width: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.feed-index-price {
+  margin-top: 2px;
   font-size: 11px;
+  font-weight: 850;
 }
 
-.arena-banner strong {
-  display: block;
-  max-width: 220px;
-  font-size: 15px;
-  line-height: 1.25;
-}
-
-.arena-banner button {
-  height: 31px;
-  padding: 0 13px;
-  border: 0;
-  border-radius: 999px;
-  color: #13221d;
-  background: #dff2e7;
-  font-size: 12px;
+.feed-index-change {
+  flex: 0 0 auto;
+  font-size: 9px;
   font-weight: 800;
+}
+
+.feed-index-sparkline {
+  width: 100%;
+  height: 22px;
+  display: block;
+  overflow: visible;
+}
+
+.feed-index-sparkline path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.feed-index-sparkline.up {
+  color: var(--green);
+}
+
+.feed-index-sparkline.down {
+  color: var(--red);
 }
 
 .new-signal-pill {
@@ -952,6 +1006,63 @@ button {
   border-bottom: 1px solid var(--line);
   color: var(--muted);
   font-size: 12px;
+}
+
+.watchlist-empty-state {
+  min-height: 420px;
+  display: none;
+  align-content: center;
+  justify-items: center;
+  padding: 36px 22px 84px;
+  text-align: center;
+}
+
+.watchlist-empty-state.is-visible {
+  display: grid;
+}
+
+.watchlist-empty-icon {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 12px;
+  border-radius: 50%;
+  color: var(--primary);
+  background: #e7ece8;
+}
+
+.watchlist-empty-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.watchlist-empty-state strong {
+  font-size: 16px;
+}
+
+.watchlist-empty-state p {
+  max-width: 230px;
+  margin: 5px 0 16px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.watchlist-empty-state button {
+  height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 12px;
+  color: #fff;
+  background: var(--primary);
+  font-size: 13px;
+  font-weight: 850;
 }
 
 .market-search {

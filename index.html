@@ -49,13 +49,7 @@
           </section>
 
           <section class="page page-feed" id="page-feed">
-            <article class="arena-banner">
-              <div>
-                <span>New Traders Arena</span>
-                <strong>Whale signals are heating up</strong>
-              </div>
-              <button type="button" data-toast="Arena 仅作演示">View</button>
-            </article>
+            <div class="feed-index-grid" data-feed-index-grid aria-label="Market indices"></div>
             <button class="new-signal-pill" type="button" data-toast="已是最新信号">↑ 1 条新信号</button>
             <div class="signal-list" data-signal-list></div>
           </section>
@@ -82,6 +76,14 @@
               </div>
             </div>
             <div class="market-list watchlist-page-list" data-watchlist-groups></div>
+            <div class="watchlist-empty-state" data-watchlist-empty>
+              <span class="watchlist-empty-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M6.5 4.5h11v16l-5.5-3.2-5.5 3.2Z"></path></svg>
+              </span>
+              <strong>Your watchlist is empty</strong>
+              <p>Search and add assets to build your watchlist.</p>
+              <button type="button" data-open-watchlist-sheet>Search Markets</button>
+            </div>
           </section>
 
           <section class="page page-detail" id="page-detail">

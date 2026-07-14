@@ -228,6 +228,102 @@ const markets = {
     leverage: "5x",
     position: null
   },
+  "XYZ100-USDC": {
+    name: "XYZ100-USDC",
+    symbol: "XYZ100",
+    category: "Indices",
+    price: "$12,482.30",
+    change: "+0.84%",
+    volume: "$1.84B",
+    funding: "0.0021%",
+    openInterest: "$742.6M",
+    oracle: "$12,484.10",
+    mark: "$12,482.30",
+    high: "$12,556.80",
+    low: "$12,301.40",
+    leverage: "10x",
+    position: null
+  },
+  "S&P500-USDC": {
+    name: "S&P500-USDC",
+    symbol: "S&P500",
+    category: "Indices",
+    price: "$6,298.44",
+    change: "+0.42%",
+    volume: "$8.62B",
+    funding: "0.0014%",
+    openInterest: "$3.18B",
+    oracle: "$6,299.02",
+    mark: "$6,298.44",
+    high: "$6,326.18",
+    low: "$6,244.70",
+    leverage: "20x",
+    position: null
+  },
+  "US500-USDC": {
+    name: "US500-USDC",
+    symbol: "US500",
+    category: "Indices",
+    price: "$6,294.10",
+    change: "+0.38%",
+    volume: "$6.94B",
+    funding: "0.0012%",
+    openInterest: "$2.76B",
+    oracle: "$6,294.72",
+    mark: "$6,294.10",
+    high: "$6,318.52",
+    low: "$6,238.84",
+    leverage: "20x",
+    position: null
+  },
+  "KR200-USDC": {
+    name: "KR200-USDC",
+    symbol: "KR200",
+    category: "Indices",
+    price: "$424.62",
+    change: "-0.31%",
+    volume: "$984.2M",
+    funding: "-0.0008%",
+    openInterest: "$418.5M",
+    oracle: "$424.68",
+    mark: "$424.62",
+    high: "$428.90",
+    low: "$421.74",
+    leverage: "10x",
+    position: null
+  },
+  "JP225-USDC": {
+    name: "JP225-USDC",
+    symbol: "JP225",
+    category: "Indices",
+    price: "$39,821.40",
+    change: "+0.57%",
+    volume: "$2.31B",
+    funding: "0.0017%",
+    openInterest: "$1.06B",
+    oracle: "$39,826.10",
+    mark: "$39,821.40",
+    high: "$40,012.80",
+    low: "$39,418.60",
+    leverage: "10x",
+    position: null
+  },
+  "QQQ-USDC": {
+    name: "QQQ-USDC",
+    symbol: "QQQ",
+    category: "Indices",
+    price: "$563.82",
+    change: "-0.18%",
+    volume: "$3.47B",
+    funding: "-0.0004%",
+    openInterest: "$1.52B",
+    oracle: "$563.88",
+    mark: "$563.82",
+    high: "$568.26",
+    low: "$560.14",
+    leverage: "20x",
+    position: null
+  },
   "Election Winner": {
     name: "Election Winner",
     symbol: "ELECT",
@@ -308,6 +404,12 @@ const marketMeta = {
   NVDAx: { type: "Synthetic", assetClass: "Tradfi", assetName: "NVIDIA" },
   TSLAx: { type: "Synthetic", assetClass: "Tradfi", assetName: "Tesla" },
   SPYx: { type: "Synthetic", assetClass: "Tradfi", assetName: "S&P 500" },
+  "XYZ100-USDC": { type: "Index", assetClass: "Tradfi", assetName: "XYZ 100 Index" },
+  "S&P500-USDC": { type: "Index", assetClass: "Tradfi", assetName: "S&P 500 Index" },
+  "US500-USDC": { type: "Index", assetClass: "Tradfi", assetName: "US 500 Index" },
+  "KR200-USDC": { type: "Index", assetClass: "Tradfi", assetName: "Korea 200 Index" },
+  "JP225-USDC": { type: "Index", assetClass: "Tradfi", assetName: "Japan 225 Index" },
+  "QQQ-USDC": { type: "Index", assetClass: "Tradfi", assetName: "Nasdaq 100 ETF" },
   "Election Winner": { type: "Prediction", assetClass: "Prediction", assetName: "US Election" },
   "EUR-USD": { type: "Currency", assetClass: "Tradfi", assetName: "Euro / US Dollar" },
   "USD-JPY": { type: "Currency", assetClass: "Tradfi", assetName: "US Dollar / Japanese Yen" },
@@ -315,6 +417,15 @@ const marketMeta = {
 };
 
 const marketOrder = Object.keys(markets);
+const feedIndexNames = ["XYZ100-USDC", "S&P500-USDC", "US500-USDC", "KR200-USDC", "JP225-USDC", "QQQ-USDC"];
+const feedIndexSparklines = {
+  "XYZ100-USDC": "M2 21 C10 22 13 14 20 16 S31 24 39 14 50 8 57 13 66 9 76 3 84 7 92 4",
+  "S&P500-USDC": "M2 20 C10 16 15 18 23 13 S35 19 43 12 55 15 63 8 72 10 82 4 92 6",
+  "US500-USDC": "M2 19 C10 20 15 14 23 15 S34 10 43 13 53 7 62 11 72 6 82 8 92 3",
+  "KR200-USDC": "M2 5 C10 8 15 6 23 11 S34 8 43 15 53 13 62 19 72 16 82 22 92 19",
+  "JP225-USDC": "M2 22 C10 18 15 21 23 14 S34 17 43 10 53 12 62 6 72 9 82 3 92 5",
+  "QQQ-USDC": "M2 6 C10 9 15 7 23 12 S34 9 43 16 53 13 62 20 72 17 82 23 92 20"
+};
 let watchlist = [
   "BTC-USDC", "ETH-USDC", "SOL-USDC",
   "BTC-USD", "ETH-USD", "SOL-USD",
@@ -329,6 +440,17 @@ const signals = [
   { direction: "LONG", coin: "HYPE", title: "Whale Entry", amount: "$12.8k", desc: "Fresh whale entry detected on HYPE.", pair: "HYPE-USDC", time: "51m ago" },
   { direction: "LONG", coin: "SOL", title: "Momentum Shift", amount: "$64.1k", desc: "Large accounts are leaning back into SOL after volume expansion.", pair: "SOL-USDC", time: "2h ago" }
 ];
+
+const indexSignals = [
+  { direction: "LONG", coin: "XYZ100", title: "Breadth Expansion", amount: "$28.6M", desc: "XYZ100 participation widened as volume moved above its session baseline.", pair: "XYZ100-USDC", time: "18m ago" },
+  { direction: "LONG", coin: "S&P500", title: "Institutional Flow", amount: "$92.4M", desc: "Large accounts added measured S&P500 exposure into the latest index advance.", pair: "S&P500-USDC", time: "24m ago" },
+  { direction: "LONG", coin: "US500", title: "Momentum Hold", amount: "$61.8M", desc: "US500 held above its intraday value area while participation remained constructive.", pair: "US500-USDC", time: "31m ago" },
+  { direction: "SHORT", coin: "KR200", title: "Risk Reduction", amount: "$14.7M", desc: "KR200 positioning softened as larger accounts reduced near-term index exposure.", pair: "KR200-USDC", time: "37m ago" },
+  { direction: "LONG", coin: "JP225", title: "Session Breakout", amount: "$35.1M", desc: "JP225 cleared its session range with improving volume and broader participation.", pair: "JP225-USDC", time: "42m ago" },
+  { direction: "SHORT", coin: "QQQ", title: "Growth Rotation", amount: "$47.3M", desc: "QQQ saw mild de-risking as flows rotated away from high-duration growth exposure.", pair: "QQQ-USDC", time: "49m ago" }
+];
+
+const detailSignals = [...signals, ...indexSignals];
 
 const topTabs = document.querySelectorAll(".top-tab");
 const mainHeader = document.querySelector("[data-main-header]");
@@ -346,6 +468,7 @@ const tradeConfirmSheet = document.querySelector("[data-trade-confirm-sheet]");
 const modelList = document.querySelector("[data-model-list]");
 const modelLabel = document.querySelector("[data-model-label]");
 const signalList = document.querySelector("[data-signal-list]");
+const feedIndexGrid = document.querySelector("[data-feed-index-grid]");
 const choiceDialog = document.querySelector("[data-choice-dialog]");
 const choiceTitle = document.querySelector("[data-choice-title]");
 const choiceOptions = document.querySelector("[data-choice-options]");
@@ -552,7 +675,8 @@ function renderWatchlistGroups() {
   const container = document.querySelector("[data-watchlist-groups]");
   container.innerHTML = orderedNames.length
     ? orderedNames.map((name) => marketRow(name, { watchlist: true })).join("")
-    : `<div class="watchlist-group-empty">No watched markets</div>`;
+    : "";
+  document.querySelector("[data-watchlist-empty]").classList.toggle("is-visible", orderedNames.length === 0);
 }
 
 function renderMarketLists() {
@@ -625,8 +749,29 @@ function renderSignals() {
   }).join("");
 }
 
+function renderFeedIndexes() {
+  feedIndexGrid.innerHTML = feedIndexNames.map((name) => {
+    const market = markets[name];
+    return `
+      <button class="feed-index-card" type="button" data-open-index="${name}" aria-label="Open ${name} market detail">
+        <span class="feed-index-head">
+          <span class="feed-index-icon">${market.symbol.slice(0, 2)}</span>
+          <strong>${market.symbol}</strong>
+        </span>
+        <span class="feed-index-quote">
+          <span class="feed-index-price">${market.price}</span>
+          <span class="feed-index-change ${isUp(market.change) ? "up" : "down"}">${market.change}</span>
+        </span>
+        <svg class="feed-index-sparkline ${isUp(market.change) ? "up" : "down"}" viewBox="0 0 94 26" preserveAspectRatio="none" aria-hidden="true">
+          <path d="${feedIndexSparklines[name]}"></path>
+        </svg>
+      </button>
+    `;
+  }).join("");
+}
+
 function renderSignalDetail(signal) {
-  currentSignalIndex = signals.indexOf(signal);
+  currentSignalIndex = detailSignals.indexOf(signal);
   document.querySelector(".detail-tags").innerHTML = `
     <span>${signal.title}</span>
     <span>${signal.pair}</span>
@@ -650,7 +795,7 @@ function renderSignalDetail(signal) {
 }
 
 function updateSignalDetailWatch() {
-  const signal = signals[currentSignalIndex];
+  const signal = detailSignals[currentSignalIndex];
   const button = document.querySelector("[data-detail-toggle-watch]");
   if (!signal || !button) return;
   const watched = watchlist.includes(signal.pair);
@@ -951,15 +1096,15 @@ function renderTokenDetail(name, source = tokenSource) {
     <div class="position-empty">No active position</div>
   `;
 
-  const related = signals.filter((signal) => signal.pair === name);
+  const related = detailSignals.filter((signal) => signal.pair === name);
   document.querySelector("[data-related-signals]").innerHTML = related.length ? related.map((signal, index) => `
-    <article class="related-row" data-related-index="${signals.indexOf(signal)}">
+    <article class="related-row" data-related-index="${detailSignals.indexOf(signal)}">
       <button type="button" data-related-detail>
         <span class="direction ${signal.direction === "SHORT" ? "short" : ""}">${signal.direction}</span>
         <span><strong>${signal.title}</strong><em>${signal.desc}</em></span>
       </button>
       <span class="related-actions">
-        <button class="signal-favorite ${favoriteSignals.has(signals.indexOf(signal)) ? "is-active" : ""}" type="button" data-related-favorite aria-label="收藏 Signal">${favoriteSignals.has(signals.indexOf(signal)) ? "★" : "☆"}</button>
+        <button class="signal-favorite ${favoriteSignals.has(detailSignals.indexOf(signal)) ? "is-active" : ""}" type="button" data-related-favorite aria-label="收藏 Signal">${favoriteSignals.has(detailSignals.indexOf(signal)) ? "★" : "☆"}</button>
         <button type="button" data-related-ask>Ask AI</button>
       </span>
     </article>
@@ -1145,6 +1290,12 @@ composer.addEventListener("submit", (event) => {
 chatThread.addEventListener("click", (event) => {
   const open = event.target.closest("[data-open-token]");
   if (open) openToken(open.dataset.openToken, "AI Chat");
+});
+
+feedIndexGrid.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-open-index]");
+  if (!card) return;
+  openToken(card.dataset.openIndex, "feed");
 });
 
 document.querySelector("[data-open-model]").addEventListener("click", () => {
@@ -1353,7 +1504,7 @@ document.querySelector("[data-detail-tab-content]").addEventListener("touchend",
 document.querySelector("[data-related-signals]").addEventListener("click", (event) => {
   const row = event.target.closest("[data-related-index]");
   if (!row) return;
-  const signal = signals[Number(row.dataset.relatedIndex)];
+  const signal = detailSignals[Number(row.dataset.relatedIndex)];
   if (event.target.closest("[data-related-favorite]")) {
     const index = Number(row.dataset.relatedIndex);
     const active = !favoriteSignals.has(index);
@@ -1425,6 +1576,7 @@ document.addEventListener("keydown", (event) => {
   }
 });
 
+renderFeedIndexes();
 renderSignals();
 renderModels();
 renderMarketLists();
