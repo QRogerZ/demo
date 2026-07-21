@@ -18,12 +18,8 @@
         <header class="main-header" data-main-header>
           <button class="round-button" type="button" data-open-sidebar aria-label="打开菜单">☰</button>
           <div class="top-switch" role="tablist" aria-label="主页面切换">
-            <button class="top-tab is-active" type="button" data-tab="chat" aria-label="AI Chat" title="AI Chat">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 18.5 3.5 21v-5A8 8 0 1 1 7 18.5Z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
-            </button>
-            <button class="top-tab" type="button" data-tab="feed" aria-label="Signals Feed" title="Signals Feed">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14M5 12h14M5 18h9"></path><circle cx="18" cy="18" r="1.5"></circle></svg>
-            </button>
+            <button class="top-tab is-active" type="button" data-tab="chat" aria-label="AI Chat">AI</button>
+            <button class="top-tab" type="button" data-tab="feed" aria-label="Signals Feed">Signals</button>
           </div>
           <button class="round-button watchlist-entry" type="button" data-open-watchlist-page aria-label="Watchlist" title="Watchlist">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 4.5h11v16l-5.5-3.2-5.5 3.2Z"></path></svg>
@@ -33,16 +29,20 @@
         <section class="app-content">
           <section class="page page-chat is-active" id="page-chat">
             <div class="chat-welcome" data-chat-welcome>
-              <div class="quest-logo" aria-hidden="true">
-                <span></span>
-              </div>
-              <h1>关于市场，尽管问。</h1>
-              <p>AI 会为你分析信号、链上数据、新闻与市场趋势。</p>
+              <h1>What would you like<br>to analyze?</h1>
+              <p>Ask your AI agent about any market.</p>
+              <button class="context-token" type="button" data-open-token-selector aria-label="Choose analysis market">
+                <span class="context-token-icon btc" data-analysis-token-icon>₿</span>
+                <span class="context-token-copy"><strong data-analysis-token-symbol>BTC</strong><small data-analysis-token-market>BTC-USDC</small></span>
+                <span class="context-token-chevron">⌄</span>
+              </button>
               <div class="shortcut-grid">
-                <button class="shortcut-card" type="button" data-prompt="分析 BTC 当前市场情绪">分析 BTC 当前市场情绪</button>
-                <button class="shortcut-card" type="button" data-prompt="当前最重要的 3 个信号是什么？">当前最重要的 3 个信号是什么？</button>
-                <button class="shortcut-card" type="button" data-prompt="ETH 是否有大额资金流入？">ETH 是否有大额资金流入？</button>
-                <button class="shortcut-card" type="button" data-prompt="Polymarket 最近有哪些热门事件？">Polymarket 最近有哪些热门事件？</button>
+                <button class="shortcut-card" type="button" data-shortcut-action="chart"><i>⌁</i><strong>Analyze chart</strong><span>Read price structure</span></button>
+                <button class="shortcut-card" type="button" data-shortcut-action="predict"><i>↗</i><strong>Predict</strong><span>Explore likely moves</span></button>
+                <button class="shortcut-card" type="button" data-shortcut-action="order"><i>≡</i><strong>Order analysis</strong><span>Review an open order</span></button>
+                <button class="shortcut-card" type="button" data-shortcut-action="risk"><i>⌗</i><strong>TP / SL</strong><span>Plan risk controls</span></button>
+                <button class="shortcut-card" type="button" data-shortcut-action="generate"><i>✦</i><strong>Generate order</strong><span>Draft a trade setup</span></button>
+                <button class="shortcut-card" type="button" data-shortcut-action="place"><i>→</i><strong>Place order</strong><span>Prepare an execution</span></button>
               </div>
             </div>
             <div class="chat-thread" data-chat-thread></div>
@@ -51,30 +51,37 @@
           <section class="page page-feed" id="page-feed">
             <div class="feed-index-grid" data-feed-index-grid aria-label="Market indices"></div>
             <button class="new-signal-pill" type="button" data-toast="已是最新信号">↑ 1 条新信号</button>
+            <div class="signal-filters" aria-label="Signal filters">
+              <button class="is-active" type="button" data-signal-filter="all">All</button>
+              <button type="button" data-signal-filter="LONG">Long</button>
+              <button type="button" data-signal-filter="SHORT">Short</button>
+              <button type="button" data-signal-filter="research">AI Research</button>
+              <button type="button" data-signal-filter="news">News</button>
+            </div>
             <div class="signal-list" data-signal-list></div>
           </section>
 
           <section class="page page-markets" id="page-markets">
-            <div class="markets-title-row">
-              <div>
-                <h1>Markets</h1>
-                <p>Browse prices and open any market.</p>
-              </div>
-              <button class="round-button plain add-market-button" type="button" data-open-watchlist-sheet aria-label="Search Markets">＋</button>
+            <header class="sub-header"><button class="round-button plain" type="button" data-back-watchlist aria-label="Back">‹</button><strong>Search Markets</strong><span></span></header>
+            <label class="market-search page-market-search"><span>⌕</span><input type="search" placeholder="Search Token / Market" data-market-page-search></label>
+            <div class="watchlist-categories page-market-categories">
+              <button class="is-active" type="button" data-market-page-category="all">All</button><button type="button" data-market-page-category="perps">Perps</button><button type="button" data-market-page-category="spot">Spot</button><button type="button" data-market-page-category="crypto">Crypto</button><button type="button" data-market-page-category="tradfi">TradFi</button><button type="button" data-market-page-category="hip3">HIP-3</button>
             </div>
             <div class="market-list" data-markets-list></div>
+            <div class="market-search-empty" data-page-market-empty>No markets found</div>
           </section>
 
           <section class="page page-watchlist" id="page-watchlist">
+            <header class="sub-header watchlist-sub-header"><button class="round-button plain" type="button" data-back-watchlist-page aria-label="Back to AI">‹</button><strong>Watchlist</strong><span></span></header>
             <div class="watchlist-page-header">
               <div>
-                <h1>Watchlist</h1>
                 <p>Your followed markets, all in one place.</p>
               </div>
               <div class="watchlist-page-actions">
-                <button class="round-button plain" type="button" data-open-watchlist-sheet aria-label="Search Markets">＋</button>
+                <button class="round-button plain" type="button" data-open-markets-page aria-label="Search Markets">＋</button>
               </div>
             </div>
+            <div class="watchlist-segments"><button class="is-active" type="button">Saved</button><button type="button" data-open-markets-page>Discover</button></div>
             <div class="market-list watchlist-page-list" data-watchlist-groups></div>
             <div class="watchlist-empty-state" data-watchlist-empty>
               <span class="watchlist-empty-icon" aria-hidden="true">
@@ -82,7 +89,7 @@
               </span>
               <strong>Your watchlist is empty</strong>
               <p>Search and add assets to build your watchlist.</p>
-              <button type="button" data-open-watchlist-sheet>Search Markets</button>
+              <button type="button" data-open-markets-page>Search Markets</button>
             </div>
           </section>
 
@@ -122,6 +129,11 @@
             <div class="detail-actions">
               <button class="button secondary" type="button" data-ask-detail>Ask AI</button>
               <button class="button primary" type="button" data-open-market>View HYPE market</button>
+            </div>
+            <div class="suggested-prompts">
+              <button type="button" data-suggested-question="What are the risks?">What are the risks?</button>
+              <button type="button" data-suggested-question="How will it impact the market?">How will it impact the market?</button>
+              <button type="button" data-suggested-question="Any trade opportunities?">Any trade opportunities?</button>
             </div>
           </section>
 
@@ -171,7 +183,7 @@
                 <button type="button" data-timeframe="1D">1D</button>
                 <button type="button" data-timeframe="1W">1W</button>
               </div>
-              <button class="token-trade-button" type="button" data-open-trade-confirm>Trade ↗</button>
+              <div class="token-primary-actions"><button class="button primary" type="button" data-analyze-market>Analyze Market</button><button class="button secondary" type="button" data-open-trade-confirm>Trade</button></div>
             </article>
             <section class="token-detail-tabs">
               <div class="token-tab-bar" role="tablist" aria-label="Market detail sections">
@@ -203,11 +215,14 @@
               <div class="avatar">R</div>
               <div>
                 <strong>2637419248@qq.com</strong>
-                <span>免费版</span>
+                <span data-profile-plan>免费版</span>
               </div>
             </article>
             <article class="list-card">
-              <button class="settings-row" type="button" data-go-subscription><span>订阅</span><strong>免费版 ›</strong></button>
+              <button class="settings-row" type="button" data-go-subscription><span>订阅</span><strong data-profile-subscription-label>免费版 ›</strong></button>
+              <button class="settings-row" type="button" data-open-gift-page="redeem"><span>兑换订阅</span><strong>›</strong></button>
+              <button class="settings-row" type="button" data-open-gift-page="myGifts"><span>我的赠送</span><strong>›</strong></button>
+              <button class="settings-row" type="button" data-open-gift-page="management"><span>订阅管理</span><strong>›</strong></button>
               <button class="settings-row" type="button" data-toast="已打开 app-next.intra.questflow.ai"><span>打开 Questflow 网站</span><strong>app-next.intra.questflow.ai</strong></button>
             </article>
             <article class="list-card">
@@ -225,47 +240,166 @@
           </section>
 
           <section class="page page-subscription" id="page-subscription">
-            <header class="sub-header">
-              <button class="round-button plain" type="button" data-back-profile aria-label="返回">‹</button>
-              <strong>Subscription</strong>
-              <span></span>
+            <header class="subscription-nav">
+              <button type="button" data-back-profile aria-label="Back to profile">‹</button>
+              <h1>Subscription</h1>
             </header>
-            <article class="subscription-hero">
-              <h1>Upgrade your AI Agent</h1>
-              <div class="segmented">
-                <button class="segment is-active" type="button" data-billing="monthly">Monthly</button>
-                <button class="segment" type="button" data-billing="annual">Annual</button>
+
+            <div class="subscription-intro">
+              <h2>Upgrade your AI Broker</h2>
+              <p>Pick the plan that matches how you trade. Annual saves 30%.<br>Fund Manager Passes are sold separately.</p>
+              <div class="model-brands" aria-label="Supported AI models">
+                <span><i class="brand-logo claude-logo" aria-hidden="true"></i>Claude</span>
+                <span><i class="brand-logo gpt-logo" aria-hidden="true"></i>GPT</span>
+                <span><i class="brand-logo grok-logo" aria-hidden="true"></i>Grok</span>
+                <span><i class="brand-logo glm-logo" aria-hidden="true"></i>GLM</span>
               </div>
-              <div class="plan-switch">
-                <button class="plan-card is-active" type="button" data-plan="pro">
-                  <span>Pro</span>
-                  <strong>$19.99/mo</strong>
-                </button>
-                <button class="plan-card" type="button" data-plan="max">
-                  <span>Max</span>
-                  <strong>$99.99/mo</strong>
-                </button>
-              </div>
-            </article>
-            <article class="feature-card">
-              <div>Discover feed & leaderboards</div>
-              <div>AI model</div>
-              <div>Usage</div>
-              <div>Copy slots</div>
-              <div>Auto-copy & advanced rules</div>
-              <div>Skill & plugin management</div>
-            </article>
-            <div class="trial-footer">
-              <button class="button primary full" type="button" data-toast="已开始 3 天试用（演示）">Start 3-day free trial</button>
-              <p>Cancel anytime. Restore purchases</p>
             </div>
+
+            <div class="billing-toggle-row">
+              <button type="button" data-billing-label="monthly" data-set-billing="monthly">Monthly</button>
+              <button class="billing-switch" type="button" role="switch" aria-checked="true" data-billing-switch aria-label="Use annual billing"><i></i></button>
+              <button class="is-active" type="button" data-billing-label="annual" data-set-billing="annual">Annual</button>
+              <em>Save 30%</em>
+            </div>
+
+            <div class="plan-selector" role="tablist" aria-label="Choose plan">
+              <button class="is-active" type="button" role="tab" aria-selected="true" data-plan="pro"><span>Pro</span><strong data-plan-price="pro"></strong></button>
+              <button type="button" role="tab" aria-selected="false" data-plan="max"><span>Max</span><strong data-plan-price="max"></strong></button>
+            </div>
+
+            <div class="feature-comparison">
+              <table>
+                <thead><tr><th>Features</th><th>Free</th><th data-current-plan-header>Pro</th></tr></thead>
+                <tbody>
+                  <tr><td>AI models</td><td>Free</td><td data-benefit="aiModels"></td></tr>
+                  <tr><td>Usage</td><td>Limited</td><td data-benefit="usage"></td></tr>
+                  <tr><td>Auto refill</td><td>—</td><td data-benefit="autoRefill"></td></tr>
+                  <tr><td>Live market data</td><td>✓</td><td data-benefit="liveMarketData"></td></tr>
+                  <tr><td>General news sources</td><td>✓</td><td data-benefit="newsSources"></td></tr>
+                  <tr><td>AI market analysis</td><td>✓</td><td data-benefit="marketAnalysis"></td></tr>
+                  <tr><td>Market anomaly signals</td><td>✓</td><td data-benefit="anomalySignals"></td></tr>
+                  <tr><td>Onchain data</td><td>Basic</td><td data-benefit="onchainData"></td></tr>
+                  <tr><td>Questflow Daily Brief</td><td>✓</td><td data-benefit="dailyBrief"></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="subscription-purchase">
+              <button class="subscription-cta" type="button" data-subscription-cta data-toast="">Start 3-day free trial</button>
+              <p data-renewal-copy></p>
+              <button class="gift-entry-button" type="button" data-open-gift-purchase>
+                <span class="gift-entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v4H3zM12 7v13M12 7H8.8a2.3 2.3 0 1 1 2.1-3.2L12 7Zm0 0h3.2a2.3 2.3 0 1 0-2.1-3.2L12 7Z"></path></svg></span>
+                <span class="gift-entry-copy"><strong>Gift a subscription</strong><small>Send Pro or Max to someone</small></span>
+                <span class="gift-entry-chevron" aria-hidden="true">›</span>
+              </button>
+              <button class="restore-purchases" type="button" data-toast="Restore purchases 已触发">Restore purchases</button>
+            </div>
+          </section>
+
+          <section class="page gift-page" id="page-gift-purchase">
+            <header class="gift-nav"><button type="button" data-gift-back="subscription" aria-label="Back">‹</button><h1>Gift a subscription</h1></header>
+            <p class="gift-lead">Choose a fixed-duration gift card for someone else.</p>
+            <h2 class="gift-section-label">Plan</h2>
+            <div class="plan-selector gift-plan-selector" role="tablist" aria-label="Choose gift plan">
+              <button class="is-active" type="button" data-gift-plan="pro"><span>Pro</span></button>
+              <button type="button" data-gift-plan="max"><span>Max</span></button>
+            </div>
+            <h2 class="gift-section-label">Gift card</h2>
+            <div class="gift-card-type-grid" role="radiogroup" aria-label="Choose gift card duration">
+              <button class="is-active" type="button" role="radio" aria-checked="true" data-gift-card-type="day30"><strong>30-day card</strong><small data-card-description="day30">30 days of Pro</small><span data-card-price="day30">$19.99</span></button>
+              <button type="button" role="radio" aria-checked="false" data-gift-card-type="day365"><strong>365-day card</strong><small data-card-description="day365">365 days of Pro</small><span data-card-price="day365">$168.00</span></button>
+            </div>
+            <section class="gift-quantity-row">
+              <div><strong>Quantity</strong><small>Each card gets a separate code</small></div>
+              <div class="quantity-stepper"><button type="button" data-gift-quantity-change="-1" aria-label="Decrease quantity">−</button><span data-gift-quantity>1</span><button type="button" data-gift-quantity-change="1" aria-label="Increase quantity">＋</button></div>
+            </section>
+            <p class="quantity-limit-note" data-quantity-limit-note>You can purchase up to 10 gift cards at a time.</p>
+            <h2 class="gift-section-label">Order summary</h2>
+            <section class="gift-order-summary">
+              <dl><div><dt>Plan</dt><dd data-summary-plan>Pro</dd></div><div><dt>Card type</dt><dd data-summary-card>30-day card</dd></div><div><dt>Duration per card</dt><dd data-summary-duration>30 days</dd></div><div><dt>Quantity</dt><dd data-summary-quantity>1</dd></div><div><dt>Unit price</dt><dd data-summary-unit>$19.99</dd></div><div class="summary-total"><dt>Total</dt><dd data-summary-total>$19.99</dd></div></dl>
+            </section>
+            <div class="gift-facts" aria-label="Gift terms">
+              <p><span>i</span>Each gift card has its own redemption code.</p>
+              <p><span>i</span>Cards provide exactly 30 or 365 days of benefits.</p>
+              <p><span>i</span>Gift cards do not auto-renew or include a free trial.</p>
+              <p><span>i</span>Codes are valid for 30 days and can be regenerated after expiry.</p>
+              <p><span>i</span>Refunds are not supported in the first version.</p>
+            </div>
+            <button class="gift-primary" type="button" data-buy-gift>Buy 1 gift card · $19.99</button>
+          </section>
+
+          <section class="page gift-page" id="page-gift-success">
+            <header class="gift-nav"><button type="button" data-gift-back="myGifts" aria-label="Back">‹</button><h1>Gift ready</h1></header>
+            <div class="gift-success-mark">✓</div>
+            <h2>Your gift is ready to share</h2>
+            <p class="gift-lead centered" data-success-summary></p>
+            <div class="success-code-list" data-success-code-list></div>
+            <button class="gift-secondary copy-all-codes" type="button" data-copy-all-codes hidden>Copy all codes</button>
+            <div class="gift-note"><strong>One-time use</strong><p>The recipient must sign in before redeeming. The benefit does not auto-renew.</p></div>
+            <button class="gift-primary" type="button" data-open-gift-page="myGifts">View my gifts</button>
+            <button class="gift-secondary" type="button" data-gift-back="subscription">Done</button>
+          </section>
+
+          <section class="page gift-page" id="page-my-gifts">
+            <header class="gift-nav"><button type="button" data-gift-back="profile" aria-label="Back">‹</button><h1>My gifts</h1><button class="gift-nav-action" type="button" data-open-gift-purchase>＋ Gift</button></header>
+            <p class="gift-lead">Gift subscriptions you purchased and their current redemption status.</p>
+            <div class="gift-list" data-gift-list></div>
+            <div class="gift-empty" data-gift-empty><i>◇</i><strong>No gifts yet</strong><p>Buy a Pro or Max subscription for someone else.</p><button type="button" data-open-gift-purchase>Gift a subscription</button></div>
+          </section>
+
+          <section class="page gift-page" id="page-redeem">
+            <header class="gift-nav"><button type="button" data-gift-back="profile" aria-label="Back">‹</button><h1>Redeem subscription</h1></header>
+            <p class="gift-lead">Enter the single-use code you received. Spaces and hyphens are handled automatically.</p>
+            <form class="redeem-form" data-redeem-form>
+              <label for="gift-code-input">Gift code</label>
+              <input id="gift-code-input" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="XXXX-XXXX-XXXX" data-redeem-input>
+              <button class="gift-primary" type="submit" data-validate-code>Check code</button>
+            </form>
+            <div class="redeem-feedback" data-redeem-feedback aria-live="polite"></div>
+            <section class="redeem-preview" data-redeem-preview hidden>
+              <div class="preview-heading"><span data-preview-badge>PRO</span><div><strong data-preview-title>Pro · 365-day card</strong><small data-preview-duration>365 days</small></div></div>
+              <dl><div><dt>Current plan</dt><dd data-preview-current>Pro</dd></div><div><dt>How it applies</dt><dd data-preview-effect></dd></div></dl>
+              <div class="gift-note"><strong data-preview-effect-title></strong><p data-preview-effect-detail></p></div>
+              <div class="renewal-warning"><strong>Auto-renewal impact</strong><p data-preview-renewal></p></div>
+              <p class="confirm-disclosure">By confirming, this code is permanently claimed and the benefit cannot be transferred or refunded.</p>
+              <button class="gift-primary" type="button" data-confirm-redemption>Confirm redemption</button>
+            </section>
+            <section class="redeem-result" data-redeem-result hidden>
+              <div class="gift-success-mark">✓</div><h2>Subscription redeemed</h2><p data-result-copy></p>
+              <button class="gift-primary" type="button" data-open-gift-page="management">View subscription benefits</button>
+              <button class="gift-secondary" type="button" data-gift-back="profile">Done</button>
+            </section>
+          </section>
+
+          <section class="page gift-page" id="page-management">
+            <header class="gift-nav"><button type="button" data-gift-back="profile" aria-label="Back">‹</button><h1>Subscription management</h1></header>
+            <div data-management-content></div>
+          </section>
+
+          <section class="page utility-page" id="page-notifications">
+            <header class="sub-header"><button class="round-button plain" type="button" data-back-home aria-label="Back">‹</button><strong>Notifications</strong><span></span></header>
+            <div class="utility-list"><div data-gift-notifications></div><button class="utility-row" type="button" data-open-notification-market><span class="utility-icon">↗</span><span><strong>BTC moved above $63K</strong><small>Price alert · 8 min ago</small></span><b>›</b></button><div class="utility-row"><span class="utility-icon">✦</span><span><strong>New whale signal</strong><small>3 accounts aligned on HYPE · 44 min ago</small></span></div></div>
+          </section>
+
+          <section class="page utility-page" id="page-skills">
+            <header class="sub-header"><button class="round-button plain" type="button" data-back-home aria-label="Back">‹</button><strong>Skills</strong><button class="text-action" type="button" data-toast="Upload new skill">Upload new</button></header>
+            <p class="page-intro">Give your agent specialized market capabilities.</p>
+            <div class="catalog-list"><article><span class="catalog-icon">⌁</span><div><strong>Chart Analyst</strong><small>Questflow · Technical structure and levels</small></div><button type="button" disabled>Installed</button></article><article><span class="catalog-icon">◫</span><div><strong>News Scout</strong><small>Questflow · Tracks market-moving news</small></div><button type="button" data-install>Install</button></article><article><span class="catalog-icon">◎</span><div><strong>Onchain Lens</strong><small>Community · Wallet and flow intelligence</small></div><button type="button" data-install>Install</button></article></div>
+          </section>
+
+          <section class="page utility-page" id="page-plugins">
+            <header class="sub-header"><button class="round-button plain" type="button" data-back-home aria-label="Back">‹</button><strong>Plugins</strong><button class="text-action" type="button" data-toast="Upload new plugin">Upload new</button></header>
+            <p class="page-intro">Connect trusted tools to your agent.</p>
+            <div class="signal-filters"><button class="is-active" type="button">All</button><button type="button">Data</button><button type="button">Trading</button></div>
+            <div class="catalog-list"><article><span class="catalog-icon">H</span><div><strong>Hyperliquid</strong><small>Market data and order context</small></div><button type="button" disabled>Installed</button></article><article><span class="catalog-icon">D</span><div><strong>DefiLlama</strong><small>Protocols, yields and TVL data</small></div><button type="button" data-install>Install</button></article></div>
           </section>
         </section>
 
         <form class="token-ai-composer" data-token-ai-composer>
           <textarea rows="1" placeholder="Ask AI about HYPE-USDC…" data-token-ai-input aria-label="Ask AI about this market"></textarea>
           <div class="token-ai-actions">
-            <button class="small-icon" type="button" data-toast="图片上传仅作演示" aria-label="上传图片">＋</button>
+            <button class="small-icon" type="button" data-open-attachments aria-label="添加附件">＋</button>
             <button class="small-icon" type="button" data-toast="语音输入仅作演示" aria-label="语音输入">◉</button>
             <button class="send-button" type="submit" aria-label="发送">↑</button>
           </div>
@@ -274,37 +408,49 @@
         <form class="composer" data-composer>
           <textarea rows="1" placeholder="Ask anything about markets" data-chat-input></textarea>
           <div class="composer-actions">
-            <button class="small-icon" type="button" data-toast="图片上传仅作演示" aria-label="上传图片">＋</button>
-            <button class="small-icon" type="button" data-toast="语音输入仅作演示" aria-label="语音输入">◉</button>
+            <button class="small-icon" type="button" data-open-attachments aria-label="添加附件">＋</button>
+            <button class="skills-trigger" type="button" data-toggle-skills>✦ Skills</button>
             <button class="model-pill" type="button" data-open-model><span data-model-label>Kimi K2.6</span>⌄</button>
-            <button class="send-button" type="submit" aria-label="发送">↑</button>
+            <button class="composer-primary mic-button" type="button" data-transcribe aria-label="语音输入">◉</button>
+            <button class="composer-primary send-button" type="submit" data-composer-send aria-label="发送" hidden>↑</button>
           </div>
         </form>
+
+        <div class="skills-popover" data-skills-popover><button type="button" data-skill-prompt="Analyze this chart">⌁ <span><strong>Chart Analyst</strong><small>Analyze market structure</small></span></button><button type="button" data-skill-prompt="Find important market news">◫ <span><strong>News Scout</strong><small>Find market-moving news</small></span></button></div>
 
         <aside class="sidebar" data-sidebar>
           <div class="sidebar-brand">
             <div class="brand-mark">Q</div>
-            <strong>Questflow AI</strong>
+            <button class="drawer-close" type="button" data-close-sidebar aria-label="Close menu">×</button>
           </div>
+          <div class="pro-upgrade" data-sidebar-upgrade><span>✦</span><div><strong>Unlock Pro</strong><small>More models and deeper analysis</small></div><button type="button" data-sidebar-upgrade>Upgrade</button></div>
           <button class="sidebar-new-chat" type="button" data-sidebar-new-chat><span>＋</span>New Chat</button>
-          <button class="side-item" type="button" data-toast="通知仅作演示">通知</button>
-          <button class="side-item" type="button" data-open-notification-market>Mock notification: BTC moved</button>
-          <button class="side-item" type="button" data-toast="Favorites 已点击">Favorites</button>
-          <h3>最近</h3>
+          <button class="side-item" type="button" data-open-utility="notifications"><span>◉</span>Notifications</button>
+          <button class="side-item" type="button" data-open-watchlist-page><span>♡</span>Favorites</button>
+          <button class="side-item" type="button" data-open-gift-page="subscription"><span>◈</span>Subscription</button>
+          <button class="side-item" type="button" data-open-gift-page="redeem"><span>↳</span>Redeem subscription</button>
+          <button class="side-item" type="button" data-open-gift-page="myGifts"><span>◇</span>My gifts</button>
+          <button class="side-item" type="button" data-open-utility="skills"><span>✦</span>Skills</button>
+          <button class="side-item" type="button" data-open-utility="plugins"><span>⌘</span>Plugins</button>
+          <h3>Recent</h3>
           <div class="history-list">
-            <button type="button" data-history="New Chat">New Chat</button>
-            <button type="button" data-history="New Chat">New Chat</button>
-            <button type="button" data-history="New Chat">New Chat</button>
-            <button type="button" data-history="BTC Perpetual">BTC Perpetual</button>
-            <button type="button" data-history="New Chat">New Chat</button>
+            <button class="is-current" type="button" data-history="BTC market outlook">BTC market outlook</button>
+            <button type="button" data-history="ETH whale activity">ETH whale activity</button>
+            <button type="button" data-history="SOL order planning">SOL order planning</button>
+            <button type="button" data-history="Weekly market recap">Weekly market recap</button>
+            <button type="button" data-history="Risk signals to watch">Risk signals to watch</button>
           </div>
-          <div class="sidebar-user" data-open-profile>
+          <button class="sidebar-user" type="button" data-open-profile>
             <div class="avatar small">R</div>
             <div>
               <strong>Roger Zhou</strong>
-              <span>免费版</span>
+              <span data-sidebar-plan>Free plan</span>
             </div>
-            <button type="button" data-sidebar-upgrade>升级</button>
+            <span class="drawer-chevron">›</span>
+          </button>
+          <div class="drawer-settings">
+            <button type="button" data-open-profile><span>⚙</span>Settings</button>
+            <div class="dark-mode-row"><span>◐</span><strong>Dark Mode</strong><button class="theme-switch" type="button" role="switch" aria-checked="false" data-dark-toggle aria-label="Toggle dark mode"><i></i></button></div>
           </div>
         </aside>
         <div class="dim-layer" data-dim></div>
@@ -354,12 +500,21 @@
         <h2>Share Prediction</h2>
         <button class="round-button plain" type="button" data-close-sheets aria-label="关闭">×</button>
       </div>
+      <div class="share-preview"><span>QUESTFLOW SIGNAL</span><strong>Market intelligence,<br>made actionable.</strong><small>AI-powered context for every move</small></div>
       <div class="share-actions">
         <button type="button" data-share-action="Save">Save</button>
         <button type="button" data-share-action="Copy">Copy</button>
         <button type="button" data-share-action="Twitter / X">Twitter / X</button>
         <button type="button" data-share-action="Telegram">Telegram</button>
       </div>
+    </section>
+  </div>
+
+  <div class="sheet-backdrop" data-attachment-sheet>
+    <section class="bottom-sheet attachment-sheet" role="dialog" aria-modal="true" aria-label="Add attachment">
+      <div class="sheet-handle"></div>
+      <div class="sheet-header"><h2>Add attachment</h2><button class="round-button plain" type="button" data-close-sheets aria-label="关闭">×</button></div>
+      <div class="attachment-actions"><button type="button" data-attachment="Photos"><span>▧</span>Photos</button><button type="button" data-attachment="Files"><span>⌑</span>Files</button></div>
     </section>
   </div>
 
@@ -387,6 +542,7 @@
   </div>
 
   <div class="toast" role="status" aria-live="polite"></div>
+  <script src="gift-service.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

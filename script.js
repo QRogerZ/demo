@@ -6,7 +6,15 @@ const pages = {
   detail: document.querySelector("#page-detail"),
   token: document.querySelector("#page-token-detail"),
   profile: document.querySelector("#page-profile"),
-  subscription: document.querySelector("#page-subscription")
+  subscription: document.querySelector("#page-subscription"),
+  giftPurchase: document.querySelector("#page-gift-purchase"),
+  giftSuccess: document.querySelector("#page-gift-success"),
+  myGifts: document.querySelector("#page-my-gifts"),
+  redeem: document.querySelector("#page-redeem"),
+  management: document.querySelector("#page-management"),
+  notifications: document.querySelector("#page-notifications"),
+  skills: document.querySelector("#page-skills"),
+  plugins: document.querySelector("#page-plugins")
 };
 
 const models = [
@@ -433,8 +441,8 @@ let watchlist = [
 ];
 
 const signals = [
-  { direction: "SHORT", coin: "ETH", title: "Whale Entry", amount: "$17.4k", desc: "A T1 whale increased a $17.4k short position (8.7x median).", pair: "ETH-USDC", time: "29m ago" },
-  { direction: "SHORT", coin: "BTC", title: "Whale Entry", amount: "$25.2k", desc: "A T2 whale increased a $25.2k short position (12.6x median).", pair: "BTC-USDC", time: "53m ago" },
+  { direction: "SHORT", type: "news", coin: "ETH", title: "Whale Entry", amount: "$17.4k", desc: "A T1 whale increased a $17.4k short position (8.7x median).", pair: "ETH-USDC", time: "29m ago" },
+  { direction: "SHORT", type: "research", coin: "BTC", title: "Whale Entry", amount: "$25.2k", desc: "A T2 whale increased a $25.2k short position (12.6x median).", pair: "BTC-USDC", time: "53m ago" },
   { direction: "SHORT", coin: "BTC", title: "Whale Add", amount: "$17.0k", desc: "A whale added to a BTC short position.", pair: "BTC-USDC", time: "1h ago" },
   { direction: "LONG", coin: "HYPE", title: "Whale Consensus", amount: "$185.2k", desc: "3 whales aligned long on HYPE.", pair: "HYPE-USDC", time: "44m ago" },
   { direction: "LONG", coin: "HYPE", title: "Whale Entry", amount: "$12.8k", desc: "Fresh whale entry detected on HYPE.", pair: "HYPE-USDC", time: "51m ago" },
@@ -464,6 +472,7 @@ const dim = document.querySelector("[data-dim]");
 const modelSheet = document.querySelector("[data-model-sheet]");
 const watchlistSheet = document.querySelector("[data-watchlist-sheet]");
 const shareSheet = document.querySelector("[data-share-sheet]");
+const attachmentSheet = document.querySelector("[data-attachment-sheet]");
 const tradeConfirmSheet = document.querySelector("[data-trade-confirm-sheet]");
 const modelList = document.querySelector("[data-model-list]");
 const modelLabel = document.querySelector("[data-model-label]");
@@ -473,6 +482,7 @@ const choiceDialog = document.querySelector("[data-choice-dialog]");
 const choiceTitle = document.querySelector("[data-choice-title]");
 const choiceOptions = document.querySelector("[data-choice-options]");
 const watchlistSearch = document.querySelector("[data-watchlist-search]");
+const marketPageSearch = document.querySelector("[data-market-page-search]");
 const appContent = document.querySelector(".app-content");
 const watchlistEntry = document.querySelector("[data-open-watchlist-page]");
 const tokenAIComposer = document.querySelector("[data-token-ai-composer]");
@@ -490,11 +500,56 @@ let currentTimeframe = "15m";
 let selectedCandleIndex = -1;
 let chartTouchActive = false;
 let watchlistCategory = "all";
+let marketPageCategory = "all";
 let currentDetailTab = "signals";
 let detailTabTouchStartX = 0;
 let tokenReturnPage = "markets";
 let tokenReturnScroll = 0;
 let currentSignalIndex = 0;
+let signalFilter = "all";
+let analysisMarket = "BTC-USDC";
+let marketSelectMode = "browse";
+let marketsReturnPage = "watchlist";
+let watchlistReturnPage = "chat";
+let watchlistReturnScroll = 0;
+let analysisReturnScroll = 0;
+let composerSending = false;
+const subscriptionSelection = { cycle: "annual", plan: "pro" };
+const giftSelection = { cardType: "day30", plan: "pro", quantity: 1 };
+let latestGiftOrderId = null;
+let validatedGiftCode = null;
+const subscriptionConfig = {
+  monthly: {
+    pro: {
+      ...GiftSubscriptionService.prices.monthly.pro,
+      renewalCopy: "Auto-renews at $19.99/mo until canceled · Cancel anytime"
+    },
+    max: {
+      ...GiftSubscriptionService.prices.monthly.max,
+      renewalCopy: "Auto-renews at $99.99/mo until canceled · Cancel anytime"
+    }
+  },
+  annual: {
+    pro: {
+      ...GiftSubscriptionService.prices.annual.pro,
+      renewalCopy: "Auto-renews at $14.00/mo, billed annually, until canceled · Cancel anytime"
+    },
+    max: {
+      ...GiftSubscriptionService.prices.annual.max,
+      renewalCopy: "Auto-renews at $70.00/mo, billed annually, until canceled · Cancel anytime"
+    }
+  }
+};
+const subscriptionBenefits = {
+  pro: {
+    aiModels: "Flagship", usage: "Pro", autoRefill: "✓", liveMarketData: "✓",
+    newsSources: "✓", marketAnalysis: "✓", anomalySignals: "✓", onchainData: "Full", dailyBrief: "✓"
+  },
+  max: {
+    aiModels: "Flagship", usage: "10× Pro", autoRefill: "✓", liveMarketData: "✓",
+    newsSources: "✓", marketAnalysis: "✓", anomalySignals: "✓", onchainData: "Full", dailyBrief: "✓"
+  }
+};
 const favoriteSignals = new Set();
 const timeframeOptions = ["1m", "5m", "15m", "1H", "4H", "1D", "1W"];
 const marketCategoryOptions = [
@@ -513,9 +568,10 @@ function showPage(name) {
     page.classList.toggle("is-active", pageName === name);
   });
 
-  const isMain = name === "chat" || name === "feed" || name === "markets" || name === "watchlist";
+  const isMain = name === "chat" || name === "feed";
   mainHeader.classList.toggle("is-hidden", !isMain);
   composer.classList.toggle("is-hidden", name !== "chat");
+  tokenAIComposer.classList.toggle("is-visible", name === "token" || name === "detail");
   watchlistEntry.classList.toggle("is-active", name === "watchlist");
 
   topTabs.forEach((tab) => {
@@ -523,6 +579,252 @@ function showPage(name) {
   });
 
   if (isMain) lastMainPage = name;
+}
+
+function renderAnalysisMarket() {
+  const market = markets[analysisMarket];
+  if (!market) return;
+  const icon = document.querySelector("[data-analysis-token-icon]");
+  icon.textContent = market.symbol === "BTC" ? "₿" : market.symbol.slice(0, 1);
+  icon.className = `context-token-icon ${tokenIcon(market.symbol)}`;
+  document.querySelector("[data-analysis-token-symbol]").textContent = market.symbol;
+  document.querySelector("[data-analysis-token-market]").textContent = market.name;
+}
+
+function selectAnalysisMarket(name) {
+  if (!markets[name]) return;
+  analysisMarket = name;
+  renderAnalysisMarket();
+  showPage("chat");
+  window.requestAnimationFrame(() => { appContent.scrollTop = analysisReturnScroll; });
+}
+
+function shortcutPrompt(action) {
+  const market = markets[analysisMarket];
+  const symbol = market.symbol;
+  const prompts = {
+    chart: `Analyze the ${symbol} chart for ${market.name}`,
+    predict: `Predict the likely direction for ${symbol}`,
+    order: `Analyze my ${symbol} order and its market context`,
+    risk: `Plan take profit and stop loss levels for ${symbol}`,
+    generate: `Generate a ${symbol} trade setup`,
+    place: `Prepare a ${symbol} order for execution`
+  };
+  return prompts[action] || `Analyze ${market.name}`;
+}
+
+function updateComposerState() {
+  const hasInput = chatInput.value.trim().length > 0;
+  composer.classList.toggle("has-input", hasInput);
+  const mic = composer.querySelector("[data-transcribe]");
+  const send = composer.querySelector("[data-composer-send]");
+  mic.hidden = hasInput;
+  send.hidden = !hasInput;
+  send.disabled = composerSending;
+}
+
+function applyTheme(theme) {
+  document.body.dataset.theme = theme;
+  const dark = theme === "dark";
+  document.querySelectorAll("[data-dark-toggle]").forEach((toggle) => toggle.setAttribute("aria-checked", String(dark)));
+}
+
+function currentSubscriptionConfig(plan = subscriptionSelection.plan) {
+  return subscriptionConfig[subscriptionSelection.cycle][plan];
+}
+
+function renderSubscription() {
+  const annual = subscriptionSelection.cycle === "annual";
+  const planLabel = subscriptionSelection.plan === "pro" ? "Pro" : "Max";
+  const selectionConfig = currentSubscriptionConfig();
+  document.querySelector("[data-billing-switch]").setAttribute("aria-checked", String(annual));
+  document.querySelectorAll("[data-billing-label]").forEach((label) => {
+    label.classList.toggle("is-active", label.dataset.billingLabel === subscriptionSelection.cycle);
+  });
+  document.querySelectorAll("[data-plan]").forEach((button) => {
+    const active = button.dataset.plan === subscriptionSelection.plan;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  document.querySelector("[data-plan-price='pro']").textContent = currentSubscriptionConfig("pro").displayPrice;
+  document.querySelector("[data-plan-price='max']").textContent = currentSubscriptionConfig("max").displayPrice;
+  document.querySelector("[data-current-plan-header]").textContent = planLabel;
+  document.querySelectorAll(".feature-comparison td[data-benefit]").forEach((cell) => {
+    cell.textContent = subscriptionBenefits[subscriptionSelection.plan][cell.dataset.benefit];
+  });
+  document.querySelector("[data-renewal-copy]").textContent = selectionConfig.renewalCopy;
+  const cta = document.querySelector("[data-subscription-cta]");
+  cta.dataset.plan = subscriptionSelection.plan;
+  cta.dataset.billingCycle = subscriptionSelection.cycle;
+  cta.dataset.productId = selectionConfig.productId;
+  cta.dataset.displayPrice = selectionConfig.displayPrice;
+  cta.dataset.toast = `${planLabel} ${subscriptionSelection.cycle} trial selected at ${selectionConfig.displayPrice}`;
+}
+
+function formatGiftDate(value, options = {}) {
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric", ...options }).format(new Date(value));
+}
+
+function planLabel(plan) {
+  if (plan === "max") return "Max";
+  if (plan === "pro") return "Pro";
+  return "Free";
+}
+
+function renderGiftPurchase() {
+  const product = GiftSubscriptionService.getGiftProduct(giftSelection.plan, giftSelection.cardType);
+  const totalCents = product.unitPriceCents * giftSelection.quantity;
+  document.querySelectorAll("[data-gift-plan]").forEach((button) => {
+    const active = button.dataset.giftPlan === giftSelection.plan;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+  document.querySelectorAll("[data-gift-card-type]").forEach((button) => {
+    const cardProduct = GiftSubscriptionService.getGiftProduct(giftSelection.plan, button.dataset.giftCardType);
+    const active = button.dataset.giftCardType === giftSelection.cardType;
+    button.classList.toggle("is-active", active);
+    button.setAttribute("aria-checked", String(active));
+    document.querySelector(`[data-card-description='${button.dataset.giftCardType}']`).textContent = `${cardProduct.durationDays} days of ${planLabel(giftSelection.plan)}`;
+    document.querySelector(`[data-card-price='${button.dataset.giftCardType}']`).textContent = cardProduct.displayPrice;
+  });
+  document.querySelector("[data-gift-quantity]").textContent = giftSelection.quantity;
+  document.querySelector("[data-gift-quantity-change='-1']").disabled = giftSelection.quantity <= 1;
+  document.querySelector("[data-gift-quantity-change='1']").disabled = giftSelection.quantity >= GiftSubscriptionService.maxGiftQuantity;
+  document.querySelector("[data-quantity-limit-note]").classList.toggle("is-visible", giftSelection.quantity >= GiftSubscriptionService.maxGiftQuantity);
+  document.querySelector("[data-summary-plan]").textContent = planLabel(giftSelection.plan);
+  document.querySelector("[data-summary-card]").textContent = product.label;
+  document.querySelector("[data-summary-duration]").textContent = `${product.durationDays} days`;
+  document.querySelector("[data-summary-quantity]").textContent = giftSelection.quantity;
+  document.querySelector("[data-summary-unit]").textContent = product.displayPrice;
+  document.querySelector("[data-summary-total]").textContent = GiftSubscriptionService.formatMoney(totalCents);
+  document.querySelector("[data-buy-gift]").textContent = `Buy ${giftSelection.quantity} gift card${giftSelection.quantity === 1 ? "" : "s"} · ${GiftSubscriptionService.formatMoney(totalCents)}`;
+}
+
+function resetRedeemPage() {
+  validatedGiftCode = null;
+  document.querySelector("[data-redeem-input]").value = "";
+  document.querySelector("[data-redeem-form]").hidden = false;
+  document.querySelector("[data-redeem-preview]").hidden = true;
+  document.querySelector("[data-redeem-result]").hidden = true;
+  document.querySelector("[data-redeem-feedback]").textContent = "";
+}
+
+function renderAccountPlanLabels() {
+  const active = GiftSubscriptionService.getAccountSummary().active;
+  const label = active ? planLabel(active.plan) : "Free";
+  document.querySelector("[data-profile-plan]").textContent = active ? `${label} 版` : "免费版";
+  document.querySelector("[data-profile-subscription-label]").textContent = `${active ? `${label} 版` : "免费版"} ›`;
+  document.querySelector("[data-sidebar-plan]").textContent = `${label} plan`;
+}
+
+function openGiftPage(name) {
+  closeSidebar();
+  if (name === "subscription") {
+    showPage("subscription");
+  } else {
+    if (name === "giftPurchase") renderGiftPurchase();
+    if (name === "myGifts") renderMyGifts();
+    if (name === "redeem") resetRedeemPage();
+    if (name === "management") renderSubscriptionManagement();
+    showPage(name);
+  }
+  appContent.scrollTop = 0;
+}
+
+function giftShareText(gift) {
+  return `A ${gift.durationDays}-day ${planLabel(gift.plan)} Questflow gift card is waiting for you.\nCode: ${gift.code.code}\nSign in and open Redeem subscription.\nValid until ${formatGiftDate(gift.code.expiresAt)}.`;
+}
+
+async function copyText(value, successMessage = "Code copied") {
+  try {
+    await navigator.clipboard.writeText(value);
+  } catch (_) {
+    const input = document.createElement("textarea");
+    input.value = value;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
+  showToast(successMessage);
+}
+
+async function shareGift(gift) {
+  const text = giftShareText(gift);
+  if (navigator.share) {
+    try { await navigator.share({ title: "Questflow gift subscription", text }); return; } catch (error) { if (error.name === "AbortError") return; }
+  }
+  await copyText(text, "Share message copied");
+}
+
+function renderGiftSuccess(orderId = latestGiftOrderId) {
+  const order = GiftSubscriptionService.getGiftOrder(orderId);
+  if (!order?.gifts.length) return openGiftPage("myGifts");
+  latestGiftOrderId = order.id;
+  document.querySelector("[data-success-summary]").textContent = `${planLabel(order.plan)} · ${order.durationDays}-day card · ${order.quantity} ${order.quantity === 1 ? "gift" : "gifts"} · ${GiftSubscriptionService.formatMoney(order.totalPriceCents)}`;
+  document.querySelector("[data-success-code-list]").innerHTML = order.gifts.map((gift, index) => `<section class="code-panel"><span>GIFT ${index + 1}</span><strong>${gift.code.code}</strong><small>Valid until ${formatGiftDate(gift.code.expiresAt)}</small><div><button type="button" data-copy-success-gift="${gift.id}">Copy</button><button type="button" data-share-success-gift="${gift.id}">Share</button></div></section>`).join("");
+  document.querySelector("[data-copy-all-codes]").hidden = order.quantity === 1;
+}
+
+function giftStatus(gift) {
+  return {
+    pending: ["Pending", "pending"], redeemed: ["Redeemed", "redeemed"],
+    code_expired: ["Code expired", "expired"], revoked: ["Revoked", "revoked"]
+  }[gift.status] || [gift.status, ""];
+}
+
+function renderMyGifts() {
+  const gifts = GiftSubscriptionService.getMyGifts();
+  const list = document.querySelector("[data-gift-list]");
+  const empty = document.querySelector("[data-gift-empty]");
+  empty.classList.toggle("is-visible", gifts.length === 0);
+  list.innerHTML = gifts.map((gift) => {
+    const [status, statusClass] = giftStatus(gift);
+    const code = gift.code?.code || "Code unavailable";
+    const timing = gift.status === "redeemed"
+      ? `Claimed ${formatGiftDate(gift.claimedAt)}`
+      : gift.status === "code_expired" ? "The paid gift remains available. Generate a new code."
+      : gift.status === "revoked" ? (gift.revokedReason || "Contact support for details.")
+      : `Valid until ${formatGiftDate(gift.code.expiresAt)}`;
+    let actions = "";
+    if (gift.status === "pending") actions = `<button type="button" data-copy-gift="${gift.id}">Copy</button><button type="button" data-share-gift="${gift.id}">Share</button>`;
+    if (gift.status === "code_expired") actions = `<button class="wide" type="button" data-regenerate-gift="${gift.id}">Regenerate code</button>`;
+    if (gift.status === "revoked") actions = `<button class="wide" type="button" data-support-gift>Contact support</button>`;
+    return `<article class="gift-card"><div class="gift-card-head"><div><strong>${planLabel(gift.plan)} · ${gift.durationDays} days</strong><small>${gift.cardType === "day365" ? "365-day card" : "30-day card"} · ${GiftSubscriptionService.formatMoney(gift.unitPriceCents)}</small></div><span class="gift-status ${statusClass}">${status}</span></div>${gift.status !== "redeemed" ? `<div class="gift-card-code">${code}</div>` : ""}<p class="gift-card-meta">Purchased ${formatGiftDate(gift.createdAt)} · Order total ${GiftSubscriptionService.formatMoney(gift.order.totalPriceCents)}<br>${gift.code?.generatedAt ? `Code generated ${formatGiftDate(gift.code.generatedAt)}<br>` : ""}${timing}</p>${actions ? `<div class="gift-card-actions">${actions}</div>` : ""}</article>`;
+  }).join("");
+}
+
+function renderRedeemPreview(validation) {
+  validatedGiftCode = validation.normalizedCode;
+  const gift = validation.gift;
+  document.querySelector("[data-preview-badge]").textContent = gift.plan.toUpperCase();
+  document.querySelector("[data-preview-title]").textContent = `${planLabel(gift.plan)} · ${gift.durationDays}-day card`;
+  document.querySelector("[data-preview-duration]").textContent = `${gift.durationDays} days of benefits`;
+  document.querySelector("[data-preview-current]").textContent = planLabel(validation.currentPlan);
+  document.querySelector("[data-preview-effect]").textContent = validation.effect.title;
+  document.querySelector("[data-preview-effect-title]").textContent = validation.effect.title;
+  document.querySelector("[data-preview-effect-detail]").textContent = validation.effect.detail;
+  document.querySelector("[data-preview-renewal]").textContent = validation.renewalImpact.message;
+  document.querySelector("[data-redeem-preview]").hidden = false;
+}
+
+function renderSubscriptionManagement() {
+  const summary = GiftSubscriptionService.getAccountSummary();
+  const container = document.querySelector("[data-management-content]");
+  const active = summary.active;
+  const renewal = summary.renewal;
+  const benefitSection = (plan, group) => `<section class="management-section"><h2>${planLabel(plan)} benefits</h2><div class="management-card"><div class="management-plan"><strong>${group.totalDays ? `${group.totalDays} days remaining` : "No pending benefits"}</strong><span>${group.count} ${group.count === 1 ? "entitlement" : "entitlements"}</span></div><p>${group.totalDays ? (plan === "pro" && active?.plan === "max" ? "Paused while Max is active" : plan === "pro" ? "Pro time is preserved and follows any Max benefits." : "Max benefits always take priority.") : "New benefits will appear here after purchase, renewal, or redemption."}</p>${group.items.length ? `<div class="management-lines">${group.items.map((item) => `<div><span>${item.cardType ? `${item.durationDays}-day card` : item.billingCycle} · ${item.source.replaceAll("_", " ")}</span><strong>${item.remainingDays} days · ${item.status}</strong></div>`).join("")}</div>` : ""}</div></section>`;
+  container.innerHTML = `
+    <section class="management-section"><h2>Current plan</h2><div class="management-card"><div class="management-plan"><strong>${active ? planLabel(active.plan) : "Free"}</strong><span>${active ? `${active.remainingDays} days left` : "No active benefit"}</span></div><p>${active ? `${active.source.replaceAll("_", " ")} · Started ${formatGiftDate(active.startedAt)}` : "Redeem or purchase a subscription to get started."}</p></div></section>
+    <section class="management-section"><h2>Auto-renewal</h2><div class="management-card"><div class="management-plan"><strong>${renewal?.enabled ? `${planLabel(renewal.plan)} · On` : "Off"}</strong><span>${renewal?.provider || "—"}</span></div><p>${renewal?.enabled ? `Next charge ${formatGiftDate(renewal.nextBillingAt)}. Gift benefits do not create renewal agreements.` : "No upcoming automatic charge."}</p><div class="management-lines"><div><span>Provider capability</span><strong>${renewal?.capability || "unknown"}</strong></div><div><span>Status</span><strong>${renewal?.status || "inactive"}</strong></div></div></div></section>
+    ${benefitSection("max", summary.max)}${benefitSection("pro", summary.pro)}
+    <section class="management-section"><h2>Benefit history</h2><div class="management-card">${summary.transactions.slice(0, 8).map((item) => `<div class="entitlement-row"><div><strong>${planLabel(item.plan)}</strong><span>${formatGiftDate(item.createdAt)}</span></div><p>${item.message}</p></div>`).join("")}</div></section>`;
+}
+
+function renderGiftNotifications() {
+  const container = document.querySelector("[data-gift-notifications]");
+  const notes = GiftSubscriptionService.getNotifications();
+  container.innerHTML = notes.slice(0, 6).map((note) => `<div class="utility-row"><span class="utility-icon">◇</span><span><strong>${note.title}</strong><small>${note.detail}</small></span></div>`).join("");
 }
 
 function showToast(message) {
@@ -547,7 +849,7 @@ function openSheet(sheet) {
 }
 
 function closeSheets() {
-  [modelSheet, watchlistSheet, shareSheet, tradeConfirmSheet, choiceDialog].forEach((sheet) => sheet.classList.remove("is-open"));
+  [modelSheet, watchlistSheet, shareSheet, attachmentSheet, tradeConfirmSheet, choiceDialog].forEach((sheet) => sheet.classList.remove("is-open"));
 }
 
 function modelIcon(name) {
@@ -680,9 +982,15 @@ function renderWatchlistGroups() {
 }
 
 function renderMarketLists() {
-  document.querySelector("[data-markets-list]").innerHTML = marketOrder.map((name) => marketRow(name)).join("");
+  renderMarketPage();
   renderWatchlistGroups();
   renderWatchlistSearch();
+}
+
+function renderMarketPage() {
+  const names = filteredMarkets(marketOrder, marketPageSearch.value).filter((name) => matchesMarketCategory(name, marketPageCategory));
+  document.querySelector("[data-markets-list]").innerHTML = names.map((name) => marketRow(name)).join("");
+  document.querySelector("[data-page-market-empty]").classList.toggle("is-visible", names.length === 0);
 }
 
 function renderWatchlistSearch() {
@@ -710,7 +1018,9 @@ function toggleWatch(name, quiet = false) {
 }
 
 function renderSignals() {
-  signalList.innerHTML = signals.map((signal, index) => {
+  signalList.innerHTML = signals.map((signal, index) => ({ signal, index }))
+    .filter(({ signal }) => signalFilter === "all" || signal.direction === signalFilter || signal.type === signalFilter)
+    .map(({ signal, index }) => {
     const market = markets[signal.pair];
     const watched = watchlist.includes(signal.pair);
     return `
@@ -1207,6 +1517,7 @@ function resetChat() {
   chatThread.innerHTML = "";
   chatWelcome.style.display = "grid";
   chatInput.value = "";
+  updateComposerState();
   showPage("chat");
 }
 
@@ -1222,9 +1533,36 @@ topTabs.forEach((tab) => {
 });
 
 document.querySelector("[data-open-sidebar]").addEventListener("click", openSidebar);
-document.querySelector("[data-open-watchlist-page]").addEventListener("click", () => {
+document.querySelector("[data-close-sidebar]").addEventListener("click", closeSidebar);
+document.querySelectorAll("[data-open-watchlist-page]").forEach((button) => button.addEventListener("click", () => {
+  watchlistReturnPage = lastMainPage === "feed" ? "feed" : "chat";
+  watchlistReturnScroll = appContent.scrollTop;
+  closeSidebar();
   showPage("watchlist");
   appContent.scrollTop = 0;
+}));
+document.querySelectorAll("[data-open-markets-page]").forEach((button) => button.addEventListener("click", () => {
+  marketSelectMode = "browse";
+  marketsReturnPage = "watchlist";
+  showPage("markets");
+  appContent.scrollTop = 0;
+  marketPageSearch.focus();
+}));
+document.querySelector("[data-back-watchlist]").addEventListener("click", () => {
+  showPage(marketsReturnPage);
+  if (marketsReturnPage === "chat") window.requestAnimationFrame(() => { appContent.scrollTop = analysisReturnScroll; });
+});
+document.querySelector("[data-back-watchlist-page]").addEventListener("click", () => {
+  showPage(watchlistReturnPage);
+  window.requestAnimationFrame(() => { appContent.scrollTop = watchlistReturnScroll; });
+});
+document.querySelector("[data-open-token-selector]").addEventListener("click", () => {
+  marketSelectMode = "analysis";
+  marketsReturnPage = "chat";
+  analysisReturnScroll = appContent.scrollTop;
+  showPage("markets");
+  appContent.scrollTop = 0;
+  marketPageSearch.focus();
 });
 document.querySelector("[data-sidebar-new-chat]").addEventListener("click", () => {
   closeSidebar();
@@ -1232,17 +1570,25 @@ document.querySelector("[data-sidebar-new-chat]").addEventListener("click", () =
 });
 dim.addEventListener("click", closeSidebar);
 
-document.querySelector("[data-open-profile]").addEventListener("click", () => {
+document.querySelectorAll("[data-open-profile]").forEach((button) => button.addEventListener("click", () => {
   lastProfileEntry = lastMainPage;
   closeSidebar();
   showPage("profile");
-});
+}));
 
-document.querySelector("[data-sidebar-upgrade]").addEventListener("click", (event) => {
+document.querySelectorAll("[data-sidebar-upgrade]").forEach((button) => button.addEventListener("click", (event) => {
   event.stopPropagation();
   closeSidebar();
   showPage("subscription");
-});
+}));
+
+document.querySelectorAll("[data-open-utility]").forEach((button) => button.addEventListener("click", () => {
+  lastProfileEntry = lastMainPage;
+  closeSidebar();
+  if (button.dataset.openUtility === "notifications") renderGiftNotifications();
+  showPage(button.dataset.openUtility);
+  appContent.scrollTop = 0;
+}));
 
 document.querySelector("[data-open-notification-market]").addEventListener("click", () => {
   closeSidebar();
@@ -1264,6 +1610,152 @@ document.querySelectorAll("[data-back-home]").forEach((button) => {
 document.querySelector("[data-back-feed]").addEventListener("click", () => showPage("feed"));
 document.querySelector("[data-go-subscription]").addEventListener("click", () => showPage("subscription"));
 document.querySelector("[data-back-profile]").addEventListener("click", () => showPage("profile"));
+document.querySelectorAll("[data-open-gift-page]").forEach((button) => button.addEventListener("click", () => openGiftPage(button.dataset.openGiftPage)));
+document.querySelectorAll("[data-open-gift-purchase]").forEach((button) => button.addEventListener("click", () => {
+  giftSelection.plan = "pro";
+  giftSelection.cardType = "day30";
+  giftSelection.quantity = 1;
+  openGiftPage("giftPurchase");
+}));
+document.querySelectorAll("[data-gift-back]").forEach((button) => button.addEventListener("click", () => openGiftPage(button.dataset.giftBack)));
+document.querySelector(".gift-plan-selector").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-gift-plan]");
+  if (!button) return;
+  giftSelection.plan = button.dataset.giftPlan;
+  renderGiftPurchase();
+});
+document.querySelector(".gift-card-type-grid").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-gift-card-type]");
+  if (!button) return;
+  giftSelection.cardType = button.dataset.giftCardType;
+  renderGiftPurchase();
+});
+document.querySelectorAll("[data-gift-quantity-change]").forEach((button) => button.addEventListener("click", () => {
+  const next = giftSelection.quantity + Number(button.dataset.giftQuantityChange);
+  giftSelection.quantity = Math.max(1, Math.min(GiftSubscriptionService.maxGiftQuantity, next));
+  renderGiftPurchase();
+}));
+document.querySelector("[data-buy-gift]").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  if (button.disabled) return;
+  button.disabled = true;
+  button.textContent = "Confirming purchase…";
+  window.setTimeout(() => {
+    try {
+      const { order } = GiftSubscriptionService.createGiftOrder({ plan: giftSelection.plan, cardType: giftSelection.cardType, quantity: giftSelection.quantity });
+      latestGiftOrderId = order.id;
+      renderGiftSuccess(order.id);
+      showPage("giftSuccess");
+      appContent.scrollTop = 0;
+    } catch (error) {
+      showToast(error.message || "Unable to complete purchase");
+    } finally {
+      button.disabled = false;
+      renderGiftPurchase();
+    }
+  }, 450);
+});
+document.querySelector("[data-success-code-list]").addEventListener("click", (event) => {
+  const copyButton = event.target.closest("[data-copy-success-gift]");
+  const shareButton = event.target.closest("[data-share-success-gift]");
+  if (copyButton) {
+    const gift = GiftSubscriptionService.getGift(copyButton.dataset.copySuccessGift);
+    if (gift?.code) copyText(gift.code.code);
+  }
+  if (shareButton) {
+    const gift = GiftSubscriptionService.getGift(shareButton.dataset.shareSuccessGift);
+    if (gift?.code) shareGift(gift);
+  }
+});
+document.querySelector("[data-copy-all-codes]").addEventListener("click", () => {
+  const order = GiftSubscriptionService.getGiftOrder(latestGiftOrderId);
+  if (!order) return;
+  const text = order.gifts.map((gift, index) => `Gift ${index + 1}: ${gift.code.code} · Valid until ${formatGiftDate(gift.code.expiresAt)}`).join("\n");
+  copyText(text, "All codes copied");
+});
+document.querySelector("[data-gift-list]").addEventListener("click", (event) => {
+  const copyButton = event.target.closest("[data-copy-gift]");
+  const shareButton = event.target.closest("[data-share-gift]");
+  const regenerateButton = event.target.closest("[data-regenerate-gift]");
+  if (copyButton) {
+    const gift = GiftSubscriptionService.getGift(copyButton.dataset.copyGift);
+    if (gift?.code) copyText(gift.code.code);
+  }
+  if (shareButton) {
+    const gift = GiftSubscriptionService.getGift(shareButton.dataset.shareGift);
+    if (gift?.code) shareGift(gift);
+  }
+  if (regenerateButton) {
+    try { GiftSubscriptionService.regenerateCode(regenerateButton.dataset.regenerateGift); renderMyGifts(); showToast("New code generated"); }
+    catch (error) { showToast(error.message); }
+  }
+  if (event.target.closest("[data-support-gift]")) showToast("Support request opened");
+});
+document.querySelector("[data-redeem-input]").addEventListener("input", (event) => {
+  const normalized = GiftSubscriptionService.normalizeCode(event.target.value).slice(0, 12);
+  event.target.value = normalized.match(/.{1,4}/g)?.join("-") || "";
+  validatedGiftCode = null;
+  document.querySelector("[data-redeem-preview]").hidden = true;
+  document.querySelector("[data-redeem-feedback]").textContent = "";
+});
+document.querySelector("[data-redeem-form]").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const button = document.querySelector("[data-validate-code]");
+  const feedback = document.querySelector("[data-redeem-feedback]");
+  button.disabled = true;
+  feedback.className = "redeem-feedback is-loading";
+  feedback.textContent = "Checking code…";
+  window.setTimeout(() => {
+    try {
+      const validation = GiftSubscriptionService.validateCode(document.querySelector("[data-redeem-input]").value);
+      feedback.className = "redeem-feedback";
+      feedback.textContent = validation.valid ? "" : validation.message;
+      if (validation.valid) renderRedeemPreview(validation);
+    } catch (_) {
+      feedback.className = "redeem-feedback";
+      feedback.textContent = "Unable to validate code. Check your connection and try again.";
+    } finally { button.disabled = false; }
+  }, 350);
+});
+document.querySelector("[data-confirm-redemption]").addEventListener("click", (event) => {
+  if (!validatedGiftCode) return;
+  const button = event.currentTarget;
+  button.disabled = true;
+  button.textContent = "Redeeming…";
+  window.setTimeout(() => {
+    try {
+      const redemption = GiftSubscriptionService.confirmRedemption(validatedGiftCode);
+      const messages = { active: `${planLabel(redemption.entitlement.plan)} is active now.`, preempt: "Max is active now. Your Pro time is paused and preserved.", queued: `${planLabel(redemption.entitlement.plan)} was added to your pending benefits.` };
+      document.querySelector("[data-result-copy]").textContent = `${messages[redemption.result]} ${redemption.renewalImpact.message}`;
+      document.querySelector("[data-redeem-form]").hidden = true;
+      document.querySelector("[data-redeem-preview]").hidden = true;
+      document.querySelector("[data-redeem-feedback]").textContent = "";
+      document.querySelector("[data-redeem-result]").hidden = false;
+      renderAccountPlanLabels();
+      validatedGiftCode = null;
+      appContent.scrollTop = 0;
+    } catch (error) {
+      document.querySelector("[data-redeem-feedback]").textContent = error.message || "Unable to redeem code.";
+    } finally {
+      button.disabled = false;
+      button.textContent = "Confirm redemption";
+    }
+  }, 400);
+});
+document.querySelector("[data-billing-switch]").addEventListener("click", () => {
+  subscriptionSelection.cycle = subscriptionSelection.cycle === "annual" ? "monthly" : "annual";
+  renderSubscription();
+});
+document.querySelectorAll("[data-set-billing]").forEach((button) => button.addEventListener("click", () => {
+  subscriptionSelection.cycle = button.dataset.setBilling;
+  renderSubscription();
+}));
+document.querySelector(".plan-selector").addEventListener("click", (event) => {
+  const plan = event.target.closest("[data-plan]");
+  if (!plan) return;
+  subscriptionSelection.plan = plan.dataset.plan;
+  renderSubscription();
+});
 document.querySelector("[data-back-token]").addEventListener("click", () => {
   showPage(tokenReturnPage);
   window.requestAnimationFrame(() => {
@@ -1278,14 +1770,37 @@ document.querySelector("[data-ask-detail]").addEventListener("click", (event) =>
 document.querySelectorAll("[data-prompt]").forEach((button) => {
   button.addEventListener("click", () => askAI(button.dataset.prompt));
 });
+document.querySelectorAll("[data-shortcut-action]").forEach((button) => {
+  button.addEventListener("click", () => askAI(shortcutPrompt(button.dataset.shortcutAction), analysisMarket));
+});
+
+document.querySelector(".signal-filters")?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-signal-filter]");
+  if (!button) return;
+  signalFilter = button.dataset.signalFilter;
+  document.querySelectorAll("[data-signal-filter]").forEach((item) => item.classList.toggle("is-active", item === button));
+  renderSignals();
+});
 
 composer.addEventListener("submit", (event) => {
   event.preventDefault();
   const prompt = chatInput.value.trim();
-  if (!prompt) return;
+  if (!prompt || composerSending) return;
+  composerSending = true;
+  composer.classList.add("is-sending");
   chatInput.value = "";
+  const send = composer.querySelector("[data-composer-send]");
+  send.textContent = "…";
+  updateComposerState();
   askAI(prompt);
+  window.setTimeout(() => {
+    composerSending = false;
+    composer.classList.remove("is-sending");
+    send.textContent = "↑";
+    updateComposerState();
+  }, 650);
 });
+chatInput.addEventListener("input", updateComposerState);
 
 chatThread.addEventListener("click", (event) => {
   const open = event.target.closest("[data-open-token]");
@@ -1303,12 +1818,42 @@ document.querySelector("[data-open-model]").addEventListener("click", () => {
   openSheet(modelSheet);
 });
 
+const skillsPopover = document.querySelector("[data-skills-popover]");
+document.querySelector("[data-toggle-skills]").addEventListener("click", () => skillsPopover.classList.toggle("is-open"));
+skillsPopover.addEventListener("click", (event) => {
+  const skill = event.target.closest("[data-skill-prompt]");
+  if (!skill) return;
+  chatInput.value = skill.dataset.skillPrompt;
+  updateComposerState();
+  chatInput.focus();
+  skillsPopover.classList.remove("is-open");
+});
+document.querySelector("[data-transcribe]").addEventListener("click", (event) => {
+  const button = event.currentTarget;
+  const active = button.classList.toggle("is-transcribing");
+  chatInput.placeholder = active ? "Transcribing..." : "Ask anything about the market";
+  button.textContent = active ? "■" : "◉";
+});
+
+document.querySelectorAll("[data-dark-toggle]").forEach((toggle) => toggle.addEventListener("click", () => {
+  applyTheme(document.body.dataset.theme === "dark" ? "light" : "dark");
+}));
+
 modelList.addEventListener("click", (event) => {
   const row = event.target.closest("[data-model]");
   if (!row) return;
   currentModel = row.dataset.model;
   modelLabel.textContent = currentModel;
   renderModels();
+  closeSheets();
+});
+
+document.querySelectorAll("[data-open-attachments]").forEach((button) => button.addEventListener("click", () => openSheet(attachmentSheet)));
+attachmentSheet.addEventListener("click", (event) => {
+  const action = event.target.closest("[data-attachment]");
+  if (!action) return;
+  closeSheets();
+  showToast(`${action.dataset.attachment} selected`);
 });
 
 signalList.addEventListener("click", (event) => {
@@ -1383,7 +1928,8 @@ document.querySelector("#page-markets").addEventListener("click", (event) => {
 
   const token = event.target.closest("[data-open-token]");
   if (token) {
-    openToken(token.dataset.openToken, "markets");
+    if (marketSelectMode === "analysis") selectAnalysisMarket(token.dataset.openToken);
+    else openToken(token.dataset.openToken, "markets");
   }
 });
 
@@ -1414,6 +1960,14 @@ watchlistSheet.addEventListener("click", (event) => {
 });
 
 watchlistSearch.addEventListener("input", renderWatchlistSearch);
+marketPageSearch.addEventListener("input", renderMarketPage);
+document.querySelector(".page-market-categories").addEventListener("click", (event) => {
+  const button = event.target.closest("[data-market-page-category]");
+  if (!button) return;
+  marketPageCategory = button.dataset.marketPageCategory;
+  document.querySelectorAll("[data-market-page-category]").forEach((item) => item.classList.toggle("is-active", item === button));
+  renderMarketPage();
+});
 document.querySelector("[data-watchlist-categories]").addEventListener("click", (event) => {
   const button = event.target.closest("[data-watchlist-category]");
   if (!button) return;
@@ -1434,6 +1988,11 @@ document.querySelector("[data-open-trade-confirm]").addEventListener("click", ()
   document.querySelector("[data-trade-market]").textContent = currentToken;
   openSheet(tradeConfirmSheet);
 });
+document.querySelector("[data-analyze-market]").addEventListener("click", () => askAI(`Analyze ${currentToken} market`, currentToken));
+document.querySelectorAll("[data-suggested-question]").forEach((button) => button.addEventListener("click", () => {
+  tokenAIInput.value = button.dataset.suggestedQuestion;
+  tokenAIInput.focus();
+}));
 document.querySelector("[data-cancel-trade]").addEventListener("click", () => tradeConfirmSheet.classList.remove("is-open"));
 document.querySelector("[data-continue-trade]").addEventListener("click", () => {
   tradeConfirmSheet.classList.remove("is-open");
@@ -1537,7 +2096,7 @@ document.querySelectorAll("[data-close-sheets]").forEach((button) => {
   button.addEventListener("click", closeSheets);
 });
 
-[modelSheet, watchlistSheet, shareSheet, tradeConfirmSheet, choiceDialog].forEach((sheet) => {
+[modelSheet, watchlistSheet, shareSheet, attachmentSheet, tradeConfirmSheet, choiceDialog].forEach((sheet) => {
   sheet.addEventListener("click", (event) => {
     if (event.target === sheet) closeSheets();
   });
@@ -1562,8 +2121,18 @@ choiceOptions.addEventListener("click", (event) => {
     ? document.querySelector("[data-language-label]")
     : document.querySelector("[data-theme-label]");
   label.textContent = `${button.dataset.choiceValue} ›`;
+  if (button.dataset.choiceType === "theme") {
+    const themes = { "浅色": "light", "深色": "dark", "跟随系统": "system" };
+    applyTheme(themes[button.dataset.choiceValue] || "system");
+  }
   closeSheets();
 });
+
+document.querySelectorAll("[data-install]").forEach((button) => button.addEventListener("click", () => {
+  button.textContent = "Installed";
+  button.disabled = true;
+  showToast("Installed successfully");
+}));
 
 document.querySelector("[data-toggle-about]").addEventListener("click", () => {
   document.querySelector("[data-about-panel]").classList.toggle("is-open");
@@ -1581,3 +2150,10 @@ renderSignals();
 renderModels();
 renderMarketLists();
 renderTokenDetail("HYPE-USDC");
+renderAnalysisMarket();
+applyTheme(document.body.dataset.theme === "dark" || (!document.body.dataset.theme && window.matchMedia("(prefers-color-scheme: dark)").matches) ? "dark" : "light");
+updateComposerState();
+renderSubscription();
+renderGiftPurchase();
+renderGiftNotifications();
+renderAccountPlanLabels();
