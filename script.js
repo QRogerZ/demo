@@ -7,11 +7,8 @@ const pages = {
   token: document.querySelector("#page-token-detail"),
   profile: document.querySelector("#page-profile"),
   subscription: document.querySelector("#page-subscription"),
-  giftPurchase: document.querySelector("#page-gift-purchase"),
-  giftSuccess: document.querySelector("#page-gift-success"),
-  myGifts: document.querySelector("#page-my-gifts"),
+  giftWebview: document.querySelector("#page-gift-webview"),
   redeem: document.querySelector("#page-redeem"),
-  management: document.querySelector("#page-management"),
   notifications: document.querySelector("#page-notifications"),
   skills: document.querySelector("#page-skills"),
   plugins: document.querySelector("#page-plugins")
@@ -517,7 +514,12 @@ let composerSending = false;
 const subscriptionSelection = { cycle: "annual", plan: "pro" };
 const giftSelection = { cardType: "day30", plan: "pro", quantity: 1 };
 let latestGiftOrderId = null;
+let selectedGiftId = null;
 let validatedGiftCode = null;
+let giftH5LoadTimers = [];
+let giftH5Panel = "giftPurchase";
+let profileScrollBeforeGiftH5 = 0;
+let giftH5CloseTimer = null;
 const subscriptionConfig = {
   monthly: {
     pro: {
@@ -721,14 +723,94 @@ function openGiftPage(name) {
   closeSidebar();
   if (name === "subscription") {
     showPage("subscription");
+  } else if (name === "redeem") {
+    resetRedeemPage();
+    showPage("redeem");
+    appContent.scrollTop = 0;
+  } else if (["giftPurchase", "giftSuccess", "myGifts", "giftOrderDetail"].includes(name)) {
+    showGiftPanel(name);
   } else {
-    if (name === "giftPurchase") renderGiftPurchase();
-    if (name === "myGifts") renderMyGifts();
-    if (name === "redeem") resetRedeemPage();
-    if (name === "management") renderSubscriptionManagement();
     showPage(name);
+    appContent.scrollTop = 0;
   }
-  appContent.scrollTop = 0;
+}
+
+function clearGiftH5LoadTimers() {
+  giftH5LoadTimers.forEach((timer) => window.clearTimeout(timer));
+  giftH5LoadTimers = [];
+}
+
+function showGiftPanel(name, direction = "forward") {
+  if (name === "giftPurchase") renderGiftPurchase();
+  if (name === "myGifts") renderMyGifts();
+  if (name === "giftOrderDetail") renderGiftOrderDetail(selectedGiftId);
+  document.querySelectorAll("#page-gift-webview .h5-panel").forEach((panel) => {
+    panel.classList.toggle("is-active", panel.id === ({ giftPurchase: "page-gift-purchase", giftSuccess: "page-gift-success", myGifts: "page-my-gifts", giftOrderDetail: "page-gift-order-detail", giftH5Loading: "page-gift-h5-loading", giftH5Error: "page-gift-h5-error" }[name]));
+    panel.classList.remove("from-back");
+  });
+  const activePanel = document.querySelector("#page-gift-webview .h5-panel.is-active");
+  if (direction === "back") activePanel?.classList.add("from-back");
+  giftH5Panel = name;
+  document.querySelector("[data-webview-body]").scrollTop = 0;
+}
+
+function setGiftH5Progress(value, visible = true) {
+  const webview = pages.giftWebview;
+  const bar = document.querySelector("[data-webview-progress]");
+  webview.classList.toggle("is-loading", visible);
+  bar.style.width = `${value}%`;
+}
+
+function loadGiftH5({ preservePanel = false } = {}) {
+  clearGiftH5LoadTimers();
+  const currentPanel = giftH5Panel;
+  pages.giftWebview.classList.toggle("is-refreshing", preservePanel);
+  if (!preservePanel) showGiftPanel("giftH5Loading");
+  setGiftH5Progress(0, true);
+  window.requestAnimationFrame(() => setGiftH5Progress(72, true));
+  giftH5LoadTimers.push(window.setTimeout(() => {
+    try {
+      GiftSubscriptionService.getMyGifts();
+      setGiftH5Progress(100, true);
+      giftH5LoadTimers.push(window.setTimeout(() => {
+        showGiftPanel(preservePanel ? currentPanel : "giftPurchase");
+        pages.giftWebview.classList.remove("is-refreshing");
+        setGiftH5Progress(100, false);
+      }, 110));
+    } catch (_) {
+      setGiftH5Progress(100, true);
+      giftH5LoadTimers.push(window.setTimeout(() => {
+        pages.giftWebview.classList.remove("is-refreshing");
+        showGiftPanel("giftH5Error");
+        setGiftH5Progress(100, false);
+      }, 110));
+    }
+  }, preservePanel ? 390 : 520));
+}
+
+function openGiftH5() {
+  closeSidebar();
+  window.clearTimeout(giftH5CloseTimer);
+  profileScrollBeforeGiftH5 = appContent.scrollTop;
+  giftSelection.plan = "pro";
+  giftSelection.cardType = "day30";
+  giftSelection.quantity = 1;
+  pages.giftWebview.classList.remove("is-closing");
+  pages.giftWebview.classList.add("is-active", "is-opening");
+  loadGiftH5();
+  giftH5LoadTimers.push(window.setTimeout(() => pages.giftWebview.classList.remove("is-opening"), 300));
+}
+
+function closeGiftH5() {
+  clearGiftH5LoadTimers();
+  pages.giftWebview.classList.remove("is-opening", "is-refreshing", "is-loading");
+  pages.giftWebview.classList.add("is-closing");
+  pages.profile.classList.add("is-active");
+  giftH5CloseTimer = window.setTimeout(() => {
+    pages.giftWebview.classList.remove("is-active", "is-closing");
+    showPage("profile");
+    window.requestAnimationFrame(() => { appContent.scrollTop = profileScrollBeforeGiftH5; });
+  }, 260);
 }
 
 function giftShareText(gift) {
@@ -790,8 +872,26 @@ function renderMyGifts() {
     if (gift.status === "pending") actions = `<button type="button" data-copy-gift="${gift.id}">Copy</button><button type="button" data-share-gift="${gift.id}">Share</button>`;
     if (gift.status === "code_expired") actions = `<button class="wide" type="button" data-regenerate-gift="${gift.id}">Regenerate code</button>`;
     if (gift.status === "revoked") actions = `<button class="wide" type="button" data-support-gift>Contact support</button>`;
+    actions += `<button class="wide gift-detail-button" type="button" data-view-gift-order="${gift.id}">View order details</button>`;
     return `<article class="gift-card"><div class="gift-card-head"><div><strong>${planLabel(gift.plan)} · ${gift.durationDays} days</strong><small>${gift.cardType === "day365" ? "365-day card" : "30-day card"} · ${GiftSubscriptionService.formatMoney(gift.unitPriceCents)}</small></div><span class="gift-status ${statusClass}">${status}</span></div>${gift.status !== "redeemed" ? `<div class="gift-card-code">${code}</div>` : ""}<p class="gift-card-meta">Purchased ${formatGiftDate(gift.createdAt)} · Order total ${GiftSubscriptionService.formatMoney(gift.order.totalPriceCents)}<br>${gift.code?.generatedAt ? `Code generated ${formatGiftDate(gift.code.generatedAt)}<br>` : ""}${timing}</p>${actions ? `<div class="gift-card-actions">${actions}</div>` : ""}</article>`;
   }).join("");
+}
+
+function renderGiftOrderDetail(giftId) {
+  const gift = GiftSubscriptionService.getGift(giftId);
+  const container = document.querySelector("[data-gift-order-detail]");
+  if (!gift) {
+    container.innerHTML = `<div class="h5-state compact"><i class="h5-error-mark" aria-hidden="true">!</i><strong>Order unavailable</strong><p>Return to purchase history and try again.</p></div>`;
+    return;
+  }
+  const [status, statusClass] = giftStatus(gift);
+  const redeemedAt = gift.claimedAt || gift.code?.redeemedAt;
+  const action = gift.status === "pending"
+    ? `<button type="button" data-copy-detail-gift="${gift.id}">Copy code</button><button type="button" data-share-detail-gift="${gift.id}">Share code</button>`
+    : gift.status === "code_expired"
+      ? `<button class="wide" type="button" data-regenerate-detail-gift="${gift.id}">Regenerate code</button>`
+      : "";
+  container.innerHTML = `<section class="gift-detail-card"><div class="gift-card-head"><div><strong>${planLabel(gift.plan)} · ${gift.durationDays} days</strong><small>Order ${gift.order.id}</small></div><span class="gift-status ${statusClass}">${status}</span></div><dl><div><dt>Card type</dt><dd>${gift.cardType === "day365" ? "365-day card" : "30-day card"}</dd></div><div><dt>Purchased</dt><dd>${formatGiftDate(gift.createdAt)}</dd></div><div><dt>Order total</dt><dd>${GiftSubscriptionService.formatMoney(gift.order.totalPriceCents)}</dd></div><div><dt>Redemption code</dt><dd>${gift.code?.code || "Unavailable"}</dd></div><div><dt>Code generated</dt><dd>${gift.code?.generatedAt ? formatGiftDate(gift.code.generatedAt) : "—"}</dd></div><div><dt>Valid until</dt><dd>${gift.code?.expiresAt ? formatGiftDate(gift.code.expiresAt) : "—"}</dd></div><div><dt>Redeemed at</dt><dd>${redeemedAt ? formatGiftDate(redeemedAt) : "—"}</dd></div></dl>${gift.status === "code_expired" ? `<div class="gift-note"><strong>Code expired</strong><p>The paid gift remains available. Generating a new code permanently keeps the old code invalid.</p></div>` : ""}${action ? `<div class="gift-card-actions">${action}</div>` : ""}</section>`;
 }
 
 function renderRedeemPreview(validation) {
@@ -806,19 +906,6 @@ function renderRedeemPreview(validation) {
   document.querySelector("[data-preview-effect-detail]").textContent = validation.effect.detail;
   document.querySelector("[data-preview-renewal]").textContent = validation.renewalImpact.message;
   document.querySelector("[data-redeem-preview]").hidden = false;
-}
-
-function renderSubscriptionManagement() {
-  const summary = GiftSubscriptionService.getAccountSummary();
-  const container = document.querySelector("[data-management-content]");
-  const active = summary.active;
-  const renewal = summary.renewal;
-  const benefitSection = (plan, group) => `<section class="management-section"><h2>${planLabel(plan)} benefits</h2><div class="management-card"><div class="management-plan"><strong>${group.totalDays ? `${group.totalDays} days remaining` : "No pending benefits"}</strong><span>${group.count} ${group.count === 1 ? "entitlement" : "entitlements"}</span></div><p>${group.totalDays ? (plan === "pro" && active?.plan === "max" ? "Paused while Max is active" : plan === "pro" ? "Pro time is preserved and follows any Max benefits." : "Max benefits always take priority.") : "New benefits will appear here after purchase, renewal, or redemption."}</p>${group.items.length ? `<div class="management-lines">${group.items.map((item) => `<div><span>${item.cardType ? `${item.durationDays}-day card` : item.billingCycle} · ${item.source.replaceAll("_", " ")}</span><strong>${item.remainingDays} days · ${item.status}</strong></div>`).join("")}</div>` : ""}</div></section>`;
-  container.innerHTML = `
-    <section class="management-section"><h2>Current plan</h2><div class="management-card"><div class="management-plan"><strong>${active ? planLabel(active.plan) : "Free"}</strong><span>${active ? `${active.remainingDays} days left` : "No active benefit"}</span></div><p>${active ? `${active.source.replaceAll("_", " ")} · Started ${formatGiftDate(active.startedAt)}` : "Redeem or purchase a subscription to get started."}</p></div></section>
-    <section class="management-section"><h2>Auto-renewal</h2><div class="management-card"><div class="management-plan"><strong>${renewal?.enabled ? `${planLabel(renewal.plan)} · On` : "Off"}</strong><span>${renewal?.provider || "—"}</span></div><p>${renewal?.enabled ? `Next charge ${formatGiftDate(renewal.nextBillingAt)}. Gift benefits do not create renewal agreements.` : "No upcoming automatic charge."}</p><div class="management-lines"><div><span>Provider capability</span><strong>${renewal?.capability || "unknown"}</strong></div><div><span>Status</span><strong>${renewal?.status || "inactive"}</strong></div></div></div></section>
-    ${benefitSection("max", summary.max)}${benefitSection("pro", summary.pro)}
-    <section class="management-section"><h2>Benefit history</h2><div class="management-card">${summary.transactions.slice(0, 8).map((item) => `<div class="entitlement-row"><div><strong>${planLabel(item.plan)}</strong><span>${formatGiftDate(item.createdAt)}</span></div><p>${item.message}</p></div>`).join("")}</div></section>`;
 }
 
 function renderGiftNotifications() {
@@ -1610,6 +1697,10 @@ document.querySelectorAll("[data-back-home]").forEach((button) => {
 document.querySelector("[data-back-feed]").addEventListener("click", () => showPage("feed"));
 document.querySelector("[data-go-subscription]").addEventListener("click", () => showPage("subscription"));
 document.querySelector("[data-back-profile]").addEventListener("click", () => showPage("profile"));
+document.querySelector("[data-open-gift-h5]").addEventListener("click", openGiftH5);
+document.querySelector("[data-retry-gift-h5]").addEventListener("click", () => loadGiftH5());
+document.querySelectorAll("[data-close-gift-h5]").forEach((button) => button.addEventListener("click", closeGiftH5));
+document.querySelector("[data-refresh-gift-h5]").addEventListener("click", () => loadGiftH5({ preservePanel: giftH5Panel !== "giftH5Error" }));
 document.querySelectorAll("[data-open-gift-page]").forEach((button) => button.addEventListener("click", () => openGiftPage(button.dataset.openGiftPage)));
 document.querySelectorAll("[data-open-gift-purchase]").forEach((button) => button.addEventListener("click", () => {
   giftSelection.plan = "pro";
@@ -1617,7 +1708,13 @@ document.querySelectorAll("[data-open-gift-purchase]").forEach((button) => butto
   giftSelection.quantity = 1;
   openGiftPage("giftPurchase");
 }));
-document.querySelectorAll("[data-gift-back]").forEach((button) => button.addEventListener("click", () => openGiftPage(button.dataset.giftBack)));
+document.querySelectorAll("[data-gift-back]").forEach((button) => button.addEventListener("click", () => {
+  if (button.dataset.giftBack === "profile") {
+    showPage("profile");
+    return;
+  }
+  showGiftPanel(button.dataset.giftBack, "back");
+}));
 document.querySelector(".gift-plan-selector").addEventListener("click", (event) => {
   const button = event.target.closest("[data-gift-plan]");
   if (!button) return;
@@ -1645,8 +1742,7 @@ document.querySelector("[data-buy-gift]").addEventListener("click", (event) => {
       const { order } = GiftSubscriptionService.createGiftOrder({ plan: giftSelection.plan, cardType: giftSelection.cardType, quantity: giftSelection.quantity });
       latestGiftOrderId = order.id;
       renderGiftSuccess(order.id);
-      showPage("giftSuccess");
-      appContent.scrollTop = 0;
+      showGiftPanel("giftSuccess");
     } catch (error) {
       showToast(error.message || "Unable to complete purchase");
     } finally {
@@ -1677,6 +1773,7 @@ document.querySelector("[data-gift-list]").addEventListener("click", (event) => 
   const copyButton = event.target.closest("[data-copy-gift]");
   const shareButton = event.target.closest("[data-share-gift]");
   const regenerateButton = event.target.closest("[data-regenerate-gift]");
+  const detailButton = event.target.closest("[data-view-gift-order]");
   if (copyButton) {
     const gift = GiftSubscriptionService.getGift(copyButton.dataset.copyGift);
     if (gift?.code) copyText(gift.code.code);
@@ -1689,7 +1786,34 @@ document.querySelector("[data-gift-list]").addEventListener("click", (event) => 
     try { GiftSubscriptionService.regenerateCode(regenerateButton.dataset.regenerateGift); renderMyGifts(); showToast("New code generated"); }
     catch (error) { showToast(error.message); }
   }
+  if (detailButton) {
+    selectedGiftId = detailButton.dataset.viewGiftOrder;
+    renderGiftOrderDetail(selectedGiftId);
+    showGiftPanel("giftOrderDetail");
+  }
   if (event.target.closest("[data-support-gift]")) showToast("Support request opened");
+});
+document.querySelector("[data-gift-order-detail]").addEventListener("click", (event) => {
+  const copyButton = event.target.closest("[data-copy-detail-gift]");
+  const shareButton = event.target.closest("[data-share-detail-gift]");
+  const regenerateButton = event.target.closest("[data-regenerate-detail-gift]");
+  if (copyButton) {
+    const gift = GiftSubscriptionService.getGift(copyButton.dataset.copyDetailGift);
+    if (gift?.code) copyText(gift.code.code);
+  }
+  if (shareButton) {
+    const gift = GiftSubscriptionService.getGift(shareButton.dataset.shareDetailGift);
+    if (gift?.code) shareGift(gift);
+  }
+  if (regenerateButton) {
+    try {
+      GiftSubscriptionService.regenerateCode(regenerateButton.dataset.regenerateDetailGift);
+      renderGiftOrderDetail(regenerateButton.dataset.regenerateDetailGift);
+      showToast("New code generated. The old code remains invalid.");
+    } catch (error) {
+      showToast(error.message);
+    }
+  }
 });
 document.querySelector("[data-redeem-input]").addEventListener("input", (event) => {
   const normalized = GiftSubscriptionService.normalizeCode(event.target.value).slice(0, 12);

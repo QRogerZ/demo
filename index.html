@@ -220,9 +220,8 @@
             </article>
             <article class="list-card">
               <button class="settings-row" type="button" data-go-subscription><span>订阅</span><strong data-profile-subscription-label>免费版 ›</strong></button>
-              <button class="settings-row" type="button" data-open-gift-page="redeem"><span>兑换订阅</span><strong>›</strong></button>
-              <button class="settings-row" type="button" data-open-gift-page="myGifts"><span>我的赠送</span><strong>›</strong></button>
-              <button class="settings-row" type="button" data-open-gift-page="management"><span>订阅管理</span><strong>›</strong></button>
+              <button class="settings-row subscription-menu-row" type="button" data-open-gift-h5><span><i class="subscription-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v4H3zM12 7v13M12 7H8.8a2.3 2.3 0 1 1 2.1-3.2L12 7Zm0 0h3.2a2.3 2.3 0 1 0-2.1-3.2L12 7Z"></path></svg></i>赠送订阅</span><strong>›</strong></button>
+              <button class="settings-row subscription-menu-row" type="button" data-open-gift-page="redeem"><span><i class="subscription-menu-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 19h14"></path></svg></i>兑换订阅</span><strong>›</strong></button>
               <button class="settings-row" type="button" data-toast="已打开 app-next.intra.questflow.ai"><span>打开 Questflow 网站</span><strong>app-next.intra.questflow.ai</strong></button>
             </article>
             <article class="list-card">
@@ -288,17 +287,33 @@
             <div class="subscription-purchase">
               <button class="subscription-cta" type="button" data-subscription-cta data-toast="">Start 3-day free trial</button>
               <p data-renewal-copy></p>
-              <button class="gift-entry-button" type="button" data-open-gift-purchase>
-                <span class="gift-entry-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 10h16v10H4zM3 7h18v4H3zM12 7v13M12 7H8.8a2.3 2.3 0 1 1 2.1-3.2L12 7Zm0 0h3.2a2.3 2.3 0 1 0-2.1-3.2L12 7Z"></path></svg></span>
-                <span class="gift-entry-copy"><strong>Gift a subscription</strong><small>Send Pro or Max to someone</small></span>
-                <span class="gift-entry-chevron" aria-hidden="true">›</span>
-              </button>
               <button class="restore-purchases" type="button" data-toast="Restore purchases 已触发">Restore purchases</button>
             </div>
           </section>
 
-          <section class="page gift-page" id="page-gift-purchase">
-            <header class="gift-nav"><button type="button" data-gift-back="subscription" aria-label="Back">‹</button><h1>Gift a subscription</h1></header>
+          <section class="page gift-webview" id="page-gift-webview" aria-label="Gift subscription secure webpage">
+            <div class="webview-progress" aria-hidden="true"><i data-webview-progress></i></div>
+            <header class="webview-nav">
+              <button type="button" data-close-gift-h5 aria-label="Back to profile"><svg viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"></path></svg></button>
+              <strong>Gift subscription</strong>
+              <button type="button" data-close-gift-h5 aria-label="Close gift webpage"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"></path></svg></button>
+            </header>
+            <div class="webview-source">
+              <span class="webview-source-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"></path></svg></span>
+              <span><strong>gift.questflow.ai</strong><small><i aria-hidden="true">⌁</i> Secure webpage</small></span>
+              <button type="button" data-refresh-gift-h5 aria-label="Refresh secure webpage"><svg viewBox="0 0 24 24"><path d="M20 7v5h-5M4 17v-5h5M6.1 8.5A7 7 0 0 1 18.5 7M5.5 17a7 7 0 0 0 12.4-1.5"></path></svg></button>
+            </div>
+            <div class="webview-body" data-webview-body>
+              <section class="h5-panel h5-state-panel" id="page-gift-h5-loading" aria-live="polite">
+                <div class="h5-state"><span class="h5-brand">Q</span><strong>Questflow</strong><p>Opening secure gift subscription page...</p></div>
+              </section>
+
+              <section class="h5-panel h5-state-panel" id="page-gift-h5-error" aria-live="polite">
+                <div class="h5-state"><i class="h5-error-mark" aria-hidden="true">!</i><strong>Unable to load this page</strong><p>Check your connection and try again.</p><button class="gift-primary" type="button" data-retry-gift-h5>Retry</button></div>
+              </section>
+
+              <section class="h5-panel" id="page-gift-purchase">
+                <header class="gift-business-header"><h1>Gift a subscription</h1><button class="gift-nav-action" type="button" data-open-gift-page="myGifts">Purchase history</button></header>
             <p class="gift-lead">Choose a fixed-duration gift card for someone else.</p>
             <h2 class="gift-section-label">Plan</h2>
             <div class="plan-selector gift-plan-selector" role="tablist" aria-label="Choose gift plan">
@@ -327,25 +342,32 @@
               <p><span>i</span>Refunds are not supported in the first version.</p>
             </div>
             <button class="gift-primary" type="button" data-buy-gift>Buy 1 gift card · $19.99</button>
-          </section>
+              </section>
 
-          <section class="page gift-page" id="page-gift-success">
-            <header class="gift-nav"><button type="button" data-gift-back="myGifts" aria-label="Back">‹</button><h1>Gift ready</h1></header>
+              <section class="h5-panel" id="page-gift-success">
+            <header class="gift-nav"><button type="button" data-gift-back="giftPurchase" aria-label="Back">‹</button><h1>Gift ready</h1></header>
             <div class="gift-success-mark">✓</div>
             <h2>Your gift is ready to share</h2>
             <p class="gift-lead centered" data-success-summary></p>
             <div class="success-code-list" data-success-code-list></div>
             <button class="gift-secondary copy-all-codes" type="button" data-copy-all-codes hidden>Copy all codes</button>
             <div class="gift-note"><strong>One-time use</strong><p>The recipient must sign in before redeeming. The benefit does not auto-renew.</p></div>
-            <button class="gift-primary" type="button" data-open-gift-page="myGifts">View my gifts</button>
-            <button class="gift-secondary" type="button" data-gift-back="subscription">Done</button>
-          </section>
+            <button class="gift-primary" type="button" data-open-gift-page="myGifts">View purchase history</button>
+            <button class="gift-secondary" type="button" data-gift-back="giftPurchase">Done</button>
+              </section>
 
-          <section class="page gift-page" id="page-my-gifts">
-            <header class="gift-nav"><button type="button" data-gift-back="profile" aria-label="Back">‹</button><h1>My gifts</h1><button class="gift-nav-action" type="button" data-open-gift-purchase>＋ Gift</button></header>
+              <section class="h5-panel" id="page-my-gifts">
+            <header class="gift-nav"><button type="button" data-gift-back="giftPurchase" aria-label="Back to gift purchase">‹</button><h1>Purchase history</h1><button class="gift-nav-action" type="button" data-open-gift-purchase>＋ Gift</button></header>
             <p class="gift-lead">Gift subscriptions you purchased and their current redemption status.</p>
             <div class="gift-list" data-gift-list></div>
             <div class="gift-empty" data-gift-empty><i>◇</i><strong>No gifts yet</strong><p>Buy a Pro or Max subscription for someone else.</p><button type="button" data-open-gift-purchase>Gift a subscription</button></div>
+              </section>
+
+              <section class="h5-panel" id="page-gift-order-detail">
+            <header class="gift-nav"><button type="button" data-gift-back="myGifts" aria-label="Back to purchase history">‹</button><h1>Order details</h1></header>
+            <div data-gift-order-detail></div>
+              </section>
+            </div>
           </section>
 
           <section class="page gift-page" id="page-redeem">
@@ -367,14 +389,8 @@
             </section>
             <section class="redeem-result" data-redeem-result hidden>
               <div class="gift-success-mark">✓</div><h2>Subscription redeemed</h2><p data-result-copy></p>
-              <button class="gift-primary" type="button" data-open-gift-page="management">View subscription benefits</button>
-              <button class="gift-secondary" type="button" data-gift-back="profile">Done</button>
+              <button class="gift-primary" type="button" data-gift-back="profile">Done</button>
             </section>
-          </section>
-
-          <section class="page gift-page" id="page-management">
-            <header class="gift-nav"><button type="button" data-gift-back="profile" aria-label="Back">‹</button><h1>Subscription management</h1></header>
-            <div data-management-content></div>
           </section>
 
           <section class="page utility-page" id="page-notifications">
@@ -429,7 +445,6 @@
           <button class="side-item" type="button" data-open-watchlist-page><span>♡</span>Favorites</button>
           <button class="side-item" type="button" data-open-gift-page="subscription"><span>◈</span>Subscription</button>
           <button class="side-item" type="button" data-open-gift-page="redeem"><span>↳</span>Redeem subscription</button>
-          <button class="side-item" type="button" data-open-gift-page="myGifts"><span>◇</span>My gifts</button>
           <button class="side-item" type="button" data-open-utility="skills"><span>✦</span>Skills</button>
           <button class="side-item" type="button" data-open-utility="plugins"><span>⌘</span>Plugins</button>
           <h3>Recent</h3>
