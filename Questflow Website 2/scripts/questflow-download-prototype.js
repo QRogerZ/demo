@@ -5,28 +5,32 @@
     launchAppUrl: "",
     ios: Object.freeze({
       platformName: "iOS",
-      storeUrl: "",
-      qrCodeImage: "",
-      qrPlaceholderImage:
-        "../assets/questflow-download/ios-qr-placeholder.svg",
+      storeUrl: "https://apps.apple.com/",
+      qrValue: "https://apps.apple.com/",
+      qrCodeImage:
+        "../assets/questflow-download/qr/app-store-home-qr.png",
       storeBadgeImage:
-        "../assets/questflow-download/app-store-badge-recreated.svg",
+        "../assets/questflow-download/stores/app-store-badge.svg",
       platformIconImage:
-        "../assets/questflow-download/apple-icon-recreated.svg",
+        "../assets/questflow-download/stores/apple-logo.svg",
       storeName: "App Store",
+      storeBadgeAlt: "Download on the App Store",
+      scanLabel: "Scan to visit the App Store",
       description: "Financial intelligence designed for iPhone and iPad.",
     }),
     android: Object.freeze({
       platformName: "Android",
-      storeUrl: "",
-      qrCodeImage: "",
-      qrPlaceholderImage:
-        "../assets/questflow-download/android-qr-placeholder.svg",
+      storeUrl: "https://play.google.com/store/apps",
+      qrValue: "https://play.google.com/store/apps",
+      qrCodeImage:
+        "../assets/questflow-download/qr/google-play-home-qr.png",
       storeBadgeImage:
-        "../assets/questflow-download/google-play-badge-recreated.svg",
+        "../assets/questflow-download/stores/google-play-badge.png",
       platformIconImage:
-        "../assets/questflow-download/google-play-icon-recreated.svg",
+        "../assets/questflow-download/stores/google-play-logo.png",
       storeName: "Google Play",
+      storeBadgeAlt: "Get it on Google Play",
+      scanLabel: "Scan to visit Google Play",
       description: "Questflow on the Android devices you use every day.",
     }),
   });
@@ -86,57 +90,40 @@
 
   const makeStoreButton = (platformKey) => {
     const platform = questflowDownloadConfig[platformKey];
-    const button = document.createElement("button");
-    const available = Boolean(platform.storeUrl);
+    const link = document.createElement("a");
 
-    button.type = "button";
-    button.className = "qf-download-store-button";
-    button.dataset.qfDownloadPlatform = platformKey;
-    button.disabled = !available;
-    button.setAttribute(
-      "aria-label",
-      available
-        ? `Open Questflow on ${platform.storeName}`
-        : `${platform.platformName} app — coming soon`
-    );
-    button.innerHTML = `
+    link.className = "qf-download-store-button";
+    link.dataset.qfDownloadPlatform = platformKey;
+    link.href = platform.storeUrl;
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.setAttribute("aria-label", `Open ${platform.storeName} in a new tab`);
+    link.innerHTML = `
       <img
         class="qf-download-store-badge"
         src="${platform.storeBadgeImage}"
-        alt=""
-        aria-hidden="true"
+        alt="${platform.storeBadgeAlt}"
       />
-      ${
-        available
-          ? ""
-          : '<span class="qf-download-store-status">Coming Soon</span>'
-      }
     `;
-
-    if (available) {
-      button.addEventListener("click", () => {
-        window.open(platform.storeUrl, "_blank", "noopener,noreferrer");
-      });
-    }
-
-    return button;
+    return link;
   };
 
   const makeQrArea = (platformKey) => {
     const platform = questflowDownloadConfig[platformKey];
-    const hasOfficialQr = Boolean(platform.storeUrl && platform.qrCodeImage);
     const area = document.createElement("div");
+    const imageShell = document.createElement("div");
     const image = document.createElement("img");
+    const label = document.createElement("p");
 
     area.className = "qf-download-qr-area";
     area.dataset.qfDownloadQr = platformKey;
-    image.src = hasOfficialQr
-      ? platform.qrCodeImage
-      : platform.qrPlaceholderImage;
-    image.alt = hasOfficialQr
-      ? `${platform.platformName} download QR code`
-      : `${platform.platformName} QR code coming soon`;
-    area.append(image);
+    area.dataset.qfDownloadQrValue = platform.qrValue;
+    imageShell.className = "qf-download-qr-image-shell";
+    image.src = platform.qrCodeImage;
+    image.alt = `${platform.platformName} store QR code`;
+    label.textContent = platform.scanLabel;
+    imageShell.append(image);
+    area.append(imageShell, label);
     return area;
   };
 
@@ -162,8 +149,9 @@
     `;
     copy.append(makeStoreButton(platformKey));
 
-    status.className = "qf-download-status-pill";
-    status.textContent = platform.storeUrl ? "Available now" : "Coming soon";
+    status.className = "qf-download-prototype-note";
+    status.textContent =
+      "Prototype link — the official Questflow listing will replace this destination.";
     copy.append(status);
 
     article.append(copy, makeQrArea(platformKey));

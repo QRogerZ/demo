@@ -101,8 +101,8 @@
 }
 
 .qf-download-brand img {
-  width: 144px;
-  height: auto;
+  width: 30px;
+  height: 30px;
   display: block;
 }
 
@@ -269,33 +269,22 @@
   border-radius: 14px;
   background: var(--qf-surface);
   text-align: left;
-}
-
-.qf-download-store-button[disabled] {
-  cursor: not-allowed;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease;
 }
 
 .qf-download-store-badge {
   width: 174px;
   height: 46px;
   display: block;
+  object-fit: contain;
 }
 
-.qf-download-store-button[disabled] .qf-download-store-badge {
-  opacity: 0.22;
+.qf-download-store-button:hover {
+  transform: translateY(-2px);
+  border-color: var(--qf-text);
 }
-
-.qf-download-store-status {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  border-radius: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
 .qf-download-availability-note {
   margin: 16px 0 0;
   color: var(--qf-muted);
@@ -427,10 +416,10 @@
 }
 
 .qf-download-platform-card {
-  min-height: 410px;
+  min-height: 450px;
   padding: clamp(28px, 3vw, 46px);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 180px;
+  grid-template-columns: minmax(0, 1fr) 210px;
   align-items: center;
   gap: 30px;
   border: 1px solid var(--qf-line);
@@ -453,9 +442,10 @@
   width: 100%;
   height: 100%;
   display: block;
+  object-fit: contain;
 }
 
-.questflow-download-prototype[data-qf-download-theme="dark"] .qf-download-platform-icon img {
+.questflow-download-prototype[data-qf-download-theme="dark"] .qf-download-platform-card[data-qf-download-platform-card="ios"] .qf-download-platform-icon img {
   filter: invert(1);
 }
 
@@ -474,24 +464,19 @@
   line-height: 1.5;
 }
 
-.qf-download-status-pill {
-  width: max-content;
+.qf-download-prototype-note {
+  max-width: 250px;
   margin-top: 14px;
-  padding: 6px 10px;
-  border: 1px solid var(--qf-line);
-  border-radius: 999px;
   color: var(--qf-muted);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .qf-download-qr-area {
-  width: 180px;
-  aspect-ratio: 1;
-  padding: 12px;
+  width: 210px;
+  padding: 10px 10px 12px;
   display: grid;
+  gap: 8px;
   place-items: center;
   border-radius: 22px;
   background: #f8f8f3;
@@ -499,13 +484,24 @@
   text-align: center;
 }
 
-.qf-download-qr-area img {
+.qf-download-qr-image-shell {
+  width: 190px;
+  height: 190px;
+  background: #fff;
+}
+
+.qf-download-qr-image-shell img {
   width: 100%;
   height: 100%;
   display: block;
   object-fit: contain;
 }
 
+.qf-download-qr-area p {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.35;
+}
 .qf-download-showcase-section {
   width: min(calc(100% - 48px), 1340px);
   margin: 0 auto;
@@ -586,8 +582,8 @@
 }
 
 .qf-download-footer-brand img {
-  width: 160px;
-  height: auto;
+  width: 32px;
+  height: 32px;
   display: block;
   filter: invert(1);
 }
@@ -758,11 +754,16 @@
   }
 
   .qf-download-platform-card {
-    grid-template-columns: minmax(0, 1fr) 150px;
+    grid-template-columns: minmax(0, 1fr) 200px;
   }
 
   .qf-download-qr-area {
-    width: 150px;
+    width: 200px;
+  }
+
+  .qf-download-qr-image-shell {
+    width: 180px;
+    height: 180px;
   }
 }
 
