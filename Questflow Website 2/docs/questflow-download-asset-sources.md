@@ -1,119 +1,98 @@
 # Questflow Download prototype asset sources
 
-Downloaded or extracted on: **2026-07-23**
+Last reviewed: **2026-07-27**
 
-All page assets listed below are stored locally. The prototype does not hotlink
-any image at runtime.
+All images and icons used by the page are stored locally under
+`assets/questflow-download/`. The page does not hotlink runtime images.
 
-## Questflow logo
+## Questflow brand
 
 - Local file: `assets/questflow-download/brand/questflow-logo.svg`
-- Source page: `https://questflow.ai/`
-- Original asset: `https://questflow.ai/redesign/questflow-logo.svg`
-- Usage: Header and footer
-- Format: SVG
+- Official page: `https://questflow.ai/`
+- Official asset: `https://questflow.ai/redesign/questflow-logo.svg`
+- Use: Web/H5 headers and footers, plus the app concept UI
 - Modification: None
 
-## App Store badge
+## Apple and App Store
 
-- Local file: `assets/questflow-download/stores/app-store-badge.svg`
-- Source page: `https://developer.apple.com/app-store/marketing/guidelines/`
-- Original asset: `https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg`
-- Usage: iOS store links
-- Format: SVG
-- Modification: None
+- Local files:
+  - `assets/questflow-download/stores/apple-logo.svg`
+  - `assets/questflow-download/stores/app-store-badge.svg`
+- Apple sources:
+  - `https://www.apple.com/`
+  - `https://developer.apple.com/app-store/marketing/guidelines/`
+  - `https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg`
+- Use: iOS QR label and platform chooser
+- Modification: The official Apple navigation mark was normalized to a
+  standalone SVG canvas without changing its path geometry or aspect ratio.
 
-## Apple logo
+## Google Play
 
-- Local file: `assets/questflow-download/stores/apple-logo.svg`
-- Source page: `https://www.apple.com/`
-- Original asset: Inline Apple logo SVG in the official global navigation
-- Usage: iOS platform card
-- Format: SVG
-- Modification: The official path geometry was copied verbatim into a
-  standalone SVG; its vertical origin was normalized to remove the navigation
-  sprite's empty canvas. The shape and aspect ratio were not changed.
+- Local files:
+  - `assets/questflow-download/stores/google-play-logo.png`
+  - `assets/questflow-download/stores/google-play-badge.png`
+- Google sources:
+  - `https://play.google.com/store/apps`
+  - `https://partnermarketinghub.withgoogle.com/brands/google-play/visual-identity/badge-guidelines/`
+  - `https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png`
+  - `https://www.gstatic.com/android/market_images/web/favicon_v3.ico`
+- Use: Android QR label and platform chooser
+- Modification: The official Play favicon was converted from ICO to PNG; the
+  artwork and proportions were not changed.
 
-## Google Play badge
+## Questflow social channels
 
-- Local file: `assets/questflow-download/stores/google-play-badge.png`
-- Source page: `https://partnermarketinghub.withgoogle.com/brands/google-play/visual-identity/badge-guidelines/`
-- Original asset: `https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png`
-- Usage: Android store links
-- Format: PNG, 646 × 250
-- Modification: None
+The channel list and destinations were checked against the current Questflow
+website footer.
 
-## Google Play logo
-
-- Local file: `assets/questflow-download/stores/google-play-logo.png`
-- Source page: `https://play.google.com/store/apps`
-- Original asset: `https://www.gstatic.com/android/market_images/web/favicon_v3.ico`
-- Usage: Android platform card
-- Format: PNG, 32 × 32
-- Modification: Converted from the official ICO container to PNG with macOS
-  Image Processing System (`sips`); no artwork, color, or proportion changes
-
-## X logo
-
-- Local file: `assets/questflow-download/social/x-logo.svg`
-- Source page: `https://about.x.com/en/who-we-are/brand-toolkit`
-- Original asset archive: `https://about.x.com/content/dam/about-twitter/x/brand-toolkit/x-logo.zip`
-- Usage: Footer social link prototype
-- Format: SVG
-- Modification: Extracted from the official archive; no artwork changes
-
-## Discord logo
-
-- Local file: `assets/questflow-download/social/discord-logo.svg`
-- Source page: `https://discord.com/branding`
-- Original asset: `https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/6762812affa5eaf1bedc0c42_Symbol.svg`
-- Usage: Footer social link prototype
-- Format: SVG
-- Modification: None
-
-## Telegram logo
-
-- Local file: `assets/questflow-download/social/telegram-logo.svg`
-- Source page: `https://telegram.org/tour/screenshots`
-- Original asset archive: `https://telegram.org/file/464001088/1/bI7AJLo7oX4.287931.zip/374fe3b0a59dc60005`
-- Usage: Footer social link prototype
-- Format: SVG
-- Modification: Extracted from the official archive; no artwork changes
+- Official brand assets retained locally:
+  - `social/x-logo.svg` from `https://about.x.com/en/who-we-are/brand-toolkit`
+  - `social/telegram-logo.svg` from `https://telegram.org/`
+  - `social/discord-logo.svg` from `https://discord.com/branding`
+- Additional local brand marks:
+  - `social/linkedin-logo.svg`
+  - `social/instagram-logo.svg`
+  - `social/youtube-logo.svg`
+  - `social/tiktok-logo.svg`
+  - `social/producthunt-logo.svg`
+  - `social/rss-logo.svg`
+- Additional icon source: Simple Icons v13,
+  `https://github.com/simple-icons/simple-icons`
+- Use: X, Telegram, LinkedIn, Discord, Instagram, YouTube, TikTok, Product Hunt,
+  and Questflow Blog footer links
+- Modification: None; CSS applies a uniform monochrome footer treatment.
 
 ## Functional UI icons
 
 - Local files:
-  - `assets/questflow-download/ui/sun.svg`
-  - `assets/questflow-download/ui/moon.svg`
-  - `assets/questflow-download/ui/arrow-up.svg`
-- Source page: `https://github.com/lucide-icons/lucide`
-- Original assets:
-  - `https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/sun.svg`
-  - `https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/moon.svg`
-  - `https://raw.githubusercontent.com/lucide-icons/lucide/main/icons/arrow-up.svg`
-- Usage: Theme toggle and back-to-top control
-- Format: SVG
+  - `ui/sun.svg`
+  - `ui/moon.svg`
+  - `ui/menu.svg`
+  - `ui/close.svg`
+  - `ui/arrow-up.svg`
+  - `ui/download.svg`
+  - `ui/external-link.svg`
+  - `ui/check.svg`
+- Source: Lucide, `https://github.com/lucide-icons/lucide`
 - Modification: None
 
 ## QR codes
 
 - Local files:
-  - `assets/questflow-download/qr/app-store-home-qr.png`
-  - `assets/questflow-download/qr/google-play-home-qr.png`
-- Generator: Python `qrcode` 8.2, error correction M, 12-pixel
-  modules, four-module quiet zone
-- Destinations:
+  - `qr/app-store-home-qr.png`
+  - `qr/google-play-home-qr.png`
+- Generator: Python `qrcode` 8.2, error correction M, 12-pixel modules, and a
+  four-module quiet zone
+- Format: 1-bit grayscale PNG; 396 x 396 and 444 x 444
+- Runtime behavior: Static local images only; no external QR service
+- Verification on 2026-07-27: Re-decoded from the saved PNG pixels using
+  `jsQR` 1.4.0 and Sharp. Results:
   - App Store: `https://apps.apple.com/`
   - Google Play: `https://play.google.com/store/apps`
-- Format: 1-bit grayscale PNG (396 × 396 and 444 × 444)
-- Modification: Generated locally; no post-processing, stretching, logo
-  overlay, gradient, or shadow
-- Verification: Re-decoded locally with `zxing-cpp` 3.1.0. Both decoded
-  values exactly matched their configured destinations.
 
-## Prototype app-screen artwork
+## App showcase
 
-The three `*-screen-placeholder.svg` files are locally authored interface
-mockups retained from the existing prototype. They are visibly labeled as
-screen placeholders and are not presented as official mobile-product
-screenshots or brand icons.
+The phone frame and finance-agent preview are HTML/CSS prototype UI, not a
+downloaded screenshot and not represented as an official App Store listing.
+The older `*-screen-placeholder.svg` files remain in the project for provenance
+but are no longer referenced by the page.
